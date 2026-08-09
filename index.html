@@ -88,18 +88,18 @@
             transform: scale(1.005);
         }
 
-        /* ===== АВАТАР (КВАДРАТНЫЙ С ЗАКРУГЛЁННЫМИ УГЛАМИ) ===== */
-        .avatar {
-            width: 180px;
-            height: 180px;
-            border-radius: 24px;
-            margin: 0 auto 18px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 0 40px rgba(0, 0, 0, 0.3);
-            overflow: hidden;
-            transition: border 0.3s;
-        }
+       /* ===== АВАТАР (ПОЧТИ ПРЯМОУГОЛЬНЫЙ, МАЛЕНЬКОЕ СКРУГЛЕНИЕ) ===== */
+.avatar {
+    width: 180px;
+    height: 180px;
+    border-radius: 8px;   /* было 24px, теперь едва заметно */
+    margin: 0 auto 18px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    transition: border 0.3s;
+}
 
         .avatar img {
             width: 100%;
