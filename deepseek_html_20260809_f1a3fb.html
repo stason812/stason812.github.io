@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>angelov — mid player / umbrella user</title>
+    <style>
+        /* ===== ПОДКЛЮЧЕНИЕ ШРИФТА ANIME ACE v3 ЧЕРЕЗ CDN ===== */
+        @font-face {
+            font-family: 'Anime Ace v3';
+            src: url('https://fonts.cdnfonts.com/s/14842/AnimeAcev3.woff') format('woff');
+            font-weight: 400;
+            font-style: normal;
+            font-display: swap;
+        }
+        @font-face {
+            font-family: 'Anime Ace v3';
+            src: url('https://fonts.cdnfonts.com/s/14842/AnimeAcev3Bold.woff') format('woff');
+            font-weight: 700;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        /* ===== ГЛОБАЛЬНЫЙ СБРОС ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #0a0a0a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Anime Ace v3', 'Arial Black', 'Impact', sans-serif;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* ===== ВИДЕОФОН ===== */
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .video-background video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1;
+        }
+
+        /* ===== КАРТОЧКА (СТЕКЛО) ===== */
+        .card {
+            position: relative;
+            z-index: 10;
+            max-width: 480px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 48px 48px 36px 36px;
+            padding: 32px 28px 40px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+            transition: transform 0.25s ease;
+            text-align: center;
+        }
+
+        .card:hover {
+            transform: scale(1.005);
+        }
+
+        /* ===== АВАТАР (КВАДРАТНЫЙ С ЗАКРУГЛЁННЫМИ УГЛАМИ) ===== */
+        .avatar {
+            width: 180px;
+            height: 180px;
+            border-radius: 24px;
+            margin: 0 auto 18px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            transition: border 0.3s;
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            filter: grayscale(100%) contrast(1.2);
+        }
+
+        .avatar:hover {
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* ===== ИМЯ ===== */
+        .name {
+            font-family: 'Anime Ace v3', 'Arial Black', 'Impact', sans-serif;
+            font-weight: 700;
+            font-size: 2.6rem;
+            letter-spacing: 2px;
+            color: #ffffff;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            margin-bottom: 6px;
+            word-break: break-word;
+        }
+
+        /* ===== ОПИСАНИЕ ===== */
+        .badge {
+            display: inline-block;
+            margin-top: 2px;
+            font-family: 'Anime Ace v3', 'Arial Black', 'Impact', sans-serif;
+            font-weight: 400;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            color: #f0f0f0;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 6px 18px;
+            border-radius: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(4px);
+            text-transform: uppercase;
+        }
+
+        .badge span {
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        /* ===== РАЗДЕЛИТЕЛЬ ===== */
+        .divider {
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            margin: 22px auto 26px;
+        }
+
+        /* ===== ССЫЛКИ (ТЕКСТ ПО ЦЕНТРУ) ===== */
+        .links {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-top: 6px;
+        }
+
+        .link-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 60px;
+            padding: 14px 22px;
+            text-decoration: none;
+            color: #ffffff;
+            font-family: 'Anime Ace v3', 'Arial Black', 'Impact', sans-serif;
+            font-weight: 400;
+            font-size: 1.05rem;
+            transition: all 0.25s ease;
+            backdrop-filter: blur(4px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .link-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            transition: left 0.5s;
+        }
+
+        .link-item:hover::before {
+            left: 100%;
+        }
+
+        .link-item:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: scale(1.01);
+            color: #ffffff;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.05);
+        }
+
+        .link-item .label {
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+
+        /* ===== СЧЁТЧИК ===== */
+        .click-counter {
+            font-family: 'Anime Ace v3', 'Arial Black', 'Impact', sans-serif;
+            font-size: 0.65rem;
+            color: rgba(255, 255, 255, 0.4);
+            margin-top: 20px;
+            letter-spacing: 2px;
+            font-weight: 300;
+            opacity: 0.6;
+            transition: opacity 0.3s;
+        }
+
+        .click-counter:hover {
+            opacity: 1;
+        }
+
+        /* ===== ФУТЕР ===== */
+        .footer {
+            margin-top: 26px;
+            font-family: 'Anime Ace v3', 'Arial Black', 'Impact', sans-serif;
+            font-size: 0.6rem;
+            color: rgba(255, 255, 255, 0.25);
+            letter-spacing: 1px;
+            font-weight: 300;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 18px;
+        }
+
+        /* ===== АДАПТИВ ===== */
+        @media (max-width: 480px) {
+            .card { padding: 24px 18px 32px; border-radius: 32px; }
+            .name { font-size: 2.0rem; }
+            .avatar { width: 140px; height: 140px; border-radius: 20px; }
+            .link-item { padding: 12px 16px; font-size: 0.9rem; }
+            .badge { font-size: 0.75rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== ВИДЕОФОН ===== -->
+    <div class="video-background">
+        <video autoplay muted loop playsinline>
+            <source src="https://www.image2url.com/r2/default/videos/1786313358394-421c86f5-2310-4697-8dfb-eeae79a5bbf2.mp4" type="video/mp4">
+        </video>
+    </div>
+    <div class="overlay"></div>
+
+    <!-- ===== КАРТОЧКА ===== -->
+    <div class="card">
+
+        <div class="avatar">
+            <img src="https://i.pinimg.com/1200x/00/35/7b/00357ba44ff37d63015e55780acdb4cf.jpg" alt="avatar angelov" loading="lazy">
+        </div>
+
+        <div class="name">angelov</div>
+        <div class="badge">
+            <span>mid player</span> / umbrella user
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="links">
+
+            <a href="https://steamcommunity.com/profiles/76561199858781159/" target="_blank" rel="noopener noreferrer" class="link-item">
+                <span class="label">steam</span>
+            </a>
+
+            <a href="https://t.me/stason812" target="_blank" rel="noopener noreferrer" class="link-item">
+                <span class="label">telegram</span>
+            </a>
+
+            <a href="https://discord.com/users/1191918956865388684" target="_blank" rel="noopener noreferrer" class="link-item">
+                <span class="label">discord</span>
+            </a>
+
+        </div>
+
+        <div class="click-counter" id="clickCounter">кликов по ссылкам: 0</div>
+
+        <div class="footer">
+            <span>made with stason</span>
+        </div>
+
+    </div>
+
+    <script>
+        // ===== СЧЁТЧИК КЛИКОВ =====
+        (function() {
+            const counterEl = document.getElementById('clickCounter');
+            let totalClicks = parseInt(localStorage.getItem('angelov_clicks_total')) || 0;
+
+            function updateCounterDisplay() {
+                if (counterEl) {
+                    counterEl.textContent = `кликов по ссылкам: ${totalClicks}`;
+                }
+                localStorage.setItem('angelov_clicks_total', totalClicks);
+            }
+
+            function handleLinkClick(e) {
+                const target = e.currentTarget;
+                if (target.tagName === 'A' && target.href) {
+                    totalClicks += 1;
+                    updateCounterDisplay();
+                }
+            }
+
+            document.querySelectorAll('.link-item').forEach(link => {
+                link.addEventListener('click', handleLinkClick);
+            });
+
+            updateCounterDisplay();
+        })();
+    </script>
+
+</body>
+</html>
