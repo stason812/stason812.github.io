@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>angelov — mid supp player / love puck</title>
+    <title>ANGELOV</title>
     <style>
-        /* ===== ШРИФТ ===== */
         @font-face {
             font-family: 'Anime Ace v3';
             src: url('https://fonts.cdnfonts.com/s/14842/AnimeAcev3.woff') format('woff');
@@ -21,7 +20,6 @@
             font-display: swap;
         }
 
-        /* ===== ГЛОБАЛЬНЫЙ СБРОС ===== */
         * {
             margin: 0;
             padding: 0;
@@ -40,7 +38,6 @@
             overflow: hidden;
         }
 
-        /* ===== ВИДЕОФОН ===== */
         .video-background {
             position: fixed;
             top: 0;
@@ -76,7 +73,6 @@
             pointer-events: none;
         }
 
-        /* ===== ЗВЁЗДЫ ===== */
         #stars-canvas {
             position: fixed;
             top: 0;
@@ -87,7 +83,6 @@
             pointer-events: none;
         }
 
-        /* ===== КАРТОЧКА ===== */
         .card {
             position: relative;
             z-index: 10;
@@ -107,7 +102,6 @@
             transform: scale(1.005);
         }
 
-        /* ===== СЧЁТЧИК ПРОСМОТРОВ (глазик) ===== */
         .views-counter {
             position: absolute;
             top: 16px;
@@ -129,7 +123,6 @@
         .views-counter .eye { font-size: 1.1rem; line-height: 1; }
         .views-counter .count { font-weight: 700; min-width: 20px; text-align: center; }
 
-        /* ===== АВАТАР ===== */
         .avatar {
             width: 180px;
             height: 180px;
@@ -150,7 +143,6 @@
         }
         .avatar:hover { border-color: rgba(255, 255, 255, 0.5); }
 
-        /* ===== ИМЯ (ОБЫЧНОЕ, БЕЗ ПЕРЕЛИВАНИЯ) ===== */
         .name {
             font-family: 'Anime Ace v3', 'Arial Black', 'Impact', sans-serif;
             font-weight: 700;
@@ -162,7 +154,6 @@
             word-break: break-word;
         }
 
-        /* ===== ОПИСАНИЕ ===== */
         .badge {
             display: inline-block;
             margin-top: 2px;
@@ -180,7 +171,6 @@
         }
         .badge span { color: #ffffff; font-weight: 700; }
 
-        /* ===== РАЗДЕЛИТЕЛЬ ===== */
         .divider {
             width: 60px;
             height: 2px;
@@ -188,7 +178,6 @@
             margin: 22px auto 26px;
         }
 
-        /* ===== ССЫЛКИ ===== */
         .links { display: flex; flex-direction: column; gap: 14px; margin-top: 6px; }
         .link-item {
             display: flex; align-items: center; justify-content: center;
@@ -224,7 +213,6 @@
         }
         .link-item .label { text-align: center; letter-spacing: 0.5px; }
 
-        /* ===== АУДИОПЛЕЕР ===== */
         .audio-player {
             margin-top: 20px;
             padding: 12px 16px 16px;
@@ -294,7 +282,6 @@
             background: #ffffff; cursor: pointer; border: none;
         }
 
-        /* ===== СЧЁТЧИК КЛИКОВ ===== */
         .click-counter {
             font-family: 'Anime Ace v3', 'Arial Black', 'Impact', sans-serif;
             font-size: 0.65rem;
@@ -307,7 +294,6 @@
         }
         .click-counter:hover { opacity: 1; }
 
-        /* ===== ФУТЕР ===== */
         .footer {
             margin-top: 16px;
             font-family: 'Anime Ace v3', 'Arial Black', 'Impact', sans-serif;
@@ -319,7 +305,6 @@
             padding-top: 14px;
         }
 
-        /* ===== АДАПТИВ ===== */
         @media (max-width: 480px) {
             .card { padding: 24px 18px 32px; border-radius: 32px; }
             .name { font-size: 2.0rem; }
@@ -333,24 +318,18 @@
 </head>
 <body>
 
-    <!-- ===== ВИДЕОФОН ===== -->
     <div class="video-background">
         <video autoplay muted loop playsinline>
             <source src="https://www.image2url.com/r2/default/videos/1786313358394-421c86f5-2310-4697-8dfb-eeae79a5bbf2.mp4" type="video/mp4">
         </video>
     </div>
 
-    <!-- ===== ЗАТЕМНЕНИЯ ===== -->
     <div class="overlay"></div>
     <div class="bottom-shadow"></div>
-
-    <!-- ===== ЗВЁЗДЫ ===== -->
     <canvas id="stars-canvas"></canvas>
 
-    <!-- ===== КАРТОЧКА ===== -->
     <div class="card">
 
-        <!-- СЧЁТЧИК ПРОСМОТРОВ -->
         <div class="views-counter" id="viewsCounter">
             <span class="eye">👁️</span>
             <span class="count" id="viewCount">0</span>
@@ -380,7 +359,6 @@
             </a>
         </div>
 
-        <!-- ===== АУДИОПЛЕЕР ===== -->
         <div class="audio-player">
             <div class="track-info">♫ Red Weather — Onda Andar</div>
             <div class="controls">
@@ -406,18 +384,17 @@
 
     </div>
 
-    <!-- ===== АУДИО ===== -->
     <audio id="bgAudio" loop preload="auto">
-        <source src="https://drive.google.com/uc?export=download&id=1LfnFJ0fp9BO_w0KSdN38eup0XBI8WQDL" type="audio/mpeg">
+        <source src="https://lfdrive.ru/f/E6C4lZ47" type="audio/mpeg">
         Твой браузер не поддерживает аудио.
     </audio>
 
     <script>
         // ============================================================
-        // 1. ПЕРЕЛИВАЮЩЕЕСЯ НАЗВАНИЕ ВКЛАДКИ (буквы пропадают/появляются)
+        // 1. ПЕРЕЛИВАЮЩЕЕСЯ НАЗВАНИЕ ВКЛАДКИ
         // ============================================================
         (function() {
-            const originalTitle = 'angelov — mid supp player / love puck';
+            const originalTitle = 'ANGELOV';
             const chars = originalTitle.split('');
             let index = 0;
 
@@ -454,7 +431,7 @@
         })();
 
         // ============================================================
-        // 3. АУДИОПЛЕЕР (исправленное воспроизведение)
+        // 3. АУДИОПЛЕЕР (АВТОЗАПУСК ПОСЛЕ ПЕРВОГО КЛИКА)
         // ============================================================
         (function() {
             const audio = document.getElementById('bgAudio');
@@ -463,6 +440,9 @@
             const volumeSlider = document.getElementById('volumeSlider');
             const currentTimeDisplay = document.getElementById('currentTime');
             const durationDisplay = document.getElementById('durationTime');
+
+            // Флаг, чтобы автозапуск сработал только один раз
+            let autoPlayAttempted = false;
 
             function formatTime(sec) {
                 if (isNaN(sec)) return '0:00';
@@ -496,6 +476,37 @@
                 }
             });
 
+            // Функция для запуска аудио
+            function tryAutoPlay() {
+                if (!autoPlayAttempted && audio.paused && audio.src && audio.src !== '') {
+                    autoPlayAttempted = true;
+                    audio.play()
+                        .then(() => {
+                            playBtn.textContent = '⏸';
+                            console.log('Автовоспроизведение успешно');
+                        })
+                        .catch(err => {
+                            console.warn('Автовоспроизведение заблокировано браузером:', err);
+                            // Показываем кнопку play активной
+                            playBtn.textContent = '▶';
+                        });
+                }
+            }
+
+            // Попытка автозапуска при любой загрузке страницы
+            document.addEventListener('DOMContentLoaded', tryAutoPlay);
+
+            // Дублируем попытку через 1 секунду (на случай, если аудио ещё не загрузилось)
+            setTimeout(tryAutoPlay, 1000);
+
+            // Автозапуск при первом клике мыши по странице (если не сработало выше)
+            document.addEventListener('click', function() {
+                if (audio.paused && audio.src && audio.src !== '') {
+                    tryAutoPlay();
+                }
+            }, { once: false });
+
+            // Кнопка Play/Pause (ручное управление)
             playBtn.addEventListener('click', function() {
                 if (audio.paused) {
                     audio.play()
@@ -521,12 +532,6 @@
             volumeSlider.addEventListener('input', function() {
                 audio.volume = parseFloat(this.value);
             });
-
-            document.addEventListener('click', function() {
-                if (audio.paused && audio.src && audio.src !== '') {
-                    audio.play().catch(() => {});
-                }
-            }, { once: false });
 
             audio.volume = parseFloat(volumeSlider.value);
         })();
@@ -561,7 +566,7 @@
         })();
 
         // ============================================================
-        // 5. ЗВЁЗДЫ (Canvas)
+        // 5. ЗВЁЗДЫ
         // ============================================================
         (function() {
             const canvas = document.getElementById('stars-canvas');
