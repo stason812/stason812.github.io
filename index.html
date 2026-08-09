@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>angelov — mid supp player / love puck</title>
     <style>
-        /* ===== ПОДКЛЮЧЕНИЕ ШРИФТА ANIME ACE v3 ЧЕРЕЗ CDN ===== */
+        /* ===== ШРИФТ ===== */
         @font-face {
             font-family: 'Anime Ace v3';
             src: url('https://fonts.cdnfonts.com/s/14842/AnimeAcev3.woff') format('woff');
@@ -40,7 +40,7 @@
             overflow: hidden;
         }
 
-        /* ===== ВИДЕОФОН С ЗАТЕМНЕНИЕМ СНИЗУ ===== */
+        /* ===== ВИДЕОФОН ===== */
         .video-background {
             position: fixed;
             top: 0;
@@ -50,14 +50,12 @@
             z-index: 0;
             overflow: hidden;
         }
-
         .video-background video {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
 
-        /* Основное затемнение (сверху) — оставляем как было */
         .overlay {
             position: fixed;
             top: 0;
@@ -67,8 +65,6 @@
             background: rgba(0, 0, 0, 0.5);
             z-index: 1;
         }
-
-        /* ДОПОЛНИТЕЛЬНОЕ ЗАТЕМНЕНИЕ СНИЗУ (градиент) */
         .bottom-shadow {
             position: fixed;
             bottom: 0;
@@ -77,10 +73,21 @@
             height: 60%;
             background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%);
             z-index: 1;
-            pointer-events: none; /* чтобы не мешать кликам */
+            pointer-events: none;
         }
 
-        /* ===== КАРТОЧКА (СТЕКЛО) ===== */
+        /* ===== ЗВЁЗДЫ ===== */
+        #stars-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        /* ===== КАРТОЧКА ===== */
         .card {
             position: relative;
             z-index: 10;
@@ -96,10 +103,31 @@
             transition: transform 0.25s ease;
             text-align: center;
         }
-
         .card:hover {
             transform: scale(1.005);
         }
+
+        /* ===== СЧЁТЧИК ПРОСМОТРОВ (глазик) ===== */
+        .views-counter {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(8px);
+            padding: 4px 12px 4px 8px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-family: 'Anime Ace v3', 'Arial Black', 'Impact', sans-serif;
+            user-select: none;
+            z-index: 20;
+        }
+        .views-counter .eye { font-size: 1.1rem; line-height: 1; }
+        .views-counter .count { font-weight: 700; min-width: 20px; text-align: center; }
 
         /* ===== АВАТАР ===== */
         .avatar {
@@ -113,7 +141,6 @@
             overflow: hidden;
             transition: border 0.3s;
         }
-
         .avatar img {
             width: 100%;
             height: 100%;
@@ -121,21 +148,28 @@
             display: block;
             filter: grayscale(100%) contrast(1.2);
         }
+        .avatar:hover { border-color: rgba(255, 255, 255, 0.5); }
 
-        .avatar:hover {
-            border-color: rgba(255, 255, 255, 0.5);
-        }
-
-        /* ===== ИМЯ ===== */
+        /* ===== ПЕРЕЛИВАЮЩЕЕСЯ ИМЯ ===== */
         .name {
             font-family: 'Anime Ace v3', 'Arial Black', 'Impact', sans-serif;
             font-weight: 700;
-            font-size: 2.6rem;
-            letter-spacing: 2px;
-            color: #ffffff;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            font-size: 2.8rem;
+            letter-spacing: 3px;
             margin-bottom: 6px;
+            background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3, #ff6b6b);
+            background-size: 300% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmer 4s linear infinite;
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
             word-break: break-word;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 0% center; }
+            100% { background-position: 300% center; }
         }
 
         /* ===== ОПИСАНИЕ ===== */
@@ -154,11 +188,7 @@
             backdrop-filter: blur(4px);
             text-transform: uppercase;
         }
-
-        .badge span {
-            color: #ffffff;
-            font-weight: 700;
-        }
+        .badge span { color: #ffffff; font-weight: 700; }
 
         /* ===== РАЗДЕЛИТЕЛЬ ===== */
         .divider {
@@ -169,17 +199,9 @@
         }
 
         /* ===== ССЫЛКИ ===== */
-        .links {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            margin-top: 6px;
-        }
-
+        .links { display: flex; flex-direction: column; gap: 14px; margin-top: 6px; }
         .link-item {
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 60px;
@@ -194,22 +216,15 @@
             position: relative;
             overflow: hidden;
         }
-
         .link-item::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
             background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
             transition: left 0.5s;
         }
-
-        .link-item:hover::before {
-            left: 100%;
-        }
-
+        .link-item:hover::before { left: 100%; }
         .link-item:hover {
             background: rgba(255, 255, 255, 0.12);
             border-color: rgba(255, 255, 255, 0.3);
@@ -217,58 +232,112 @@
             color: #ffffff;
             box-shadow: 0 0 30px rgba(255, 255, 255, 0.05);
         }
+        .link-item .label { text-align: center; letter-spacing: 0.5px; }
 
-        .link-item .label {
-            text-align: center;
+        /* ===== АУДИОПЛЕЕР ===== */
+        .audio-player {
+            margin-top: 20px;
+            padding: 12px 16px 16px;
+            background: rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(8px);
+            border-radius: 60px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .audio-player .track-info {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.5);
             letter-spacing: 0.5px;
+            text-align: center;
+            font-family: 'Anime Ace v3', 'Arial Black', 'Impact', sans-serif;
+        }
+        .audio-player .controls { display: flex; align-items: center; gap: 12px; }
+        .audio-player .controls button {
+            background: none; border: none; color: #fff;
+            font-size: 1.2rem; cursor: pointer;
+            padding: 4px 8px; border-radius: 30px;
+            transition: background 0.2s;
+            font-family: 'Anime Ace v3', 'Arial Black', 'Impact', sans-serif;
+            background: rgba(255,255,255,0.05);
+            flex-shrink: 0;
+        }
+        .audio-player .controls button:hover { background: rgba(255,255,255,0.15); }
+        .audio-player .controls .slider-container { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+        .audio-player .controls .slider-container input[type="range"] {
+            width: 100%; height: 4px;
+            -webkit-appearance: none; appearance: none;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px; outline: none;
+        }
+        .audio-player .controls .slider-container input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none;
+            width: 12px; height: 12px; border-radius: 50%;
+            background: #ffffff; cursor: pointer;
+            box-shadow: 0 0 8px rgba(255,255,255,0.3);
+        }
+        .audio-player .controls .slider-container input[type="range"]::-moz-range-thumb {
+            width: 12px; height: 12px; border-radius: 50%;
+            background: #ffffff; cursor: pointer; border: none;
+        }
+        .audio-player .time-display {
+            font-size: 0.6rem; color: rgba(255, 255, 255, 0.4);
+            min-width: 32px; text-align: center;
+            font-family: 'Anime Ace v3', 'Arial Black', 'Impact', sans-serif;
+        }
+        .audio-player .volume-row { display: flex; align-items: center; gap: 8px; padding: 0 4px; }
+        .audio-player .volume-row .vol-icon { font-size: 0.8rem; color: rgba(255, 255, 255, 0.5); }
+        .audio-player .volume-row input[type="range"] {
+            flex: 1; height: 3px;
+            -webkit-appearance: none; appearance: none;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px; outline: none;
+        }
+        .audio-player .volume-row input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none;
+            width: 10px; height: 10px; border-radius: 50%;
+            background: #ffffff; cursor: pointer;
+        }
+        .audio-player .volume-row input[type="range"]::-moz-range-thumb {
+            width: 10px; height: 10px; border-radius: 50%;
+            background: #ffffff; cursor: pointer; border: none;
         }
 
-        /* ===== СЧЁТЧИК ===== */
+        /* ===== СЧЁТЧИК КЛИКОВ ===== */
         .click-counter {
             font-family: 'Anime Ace v3', 'Arial Black', 'Impact', sans-serif;
             font-size: 0.65rem;
             color: rgba(255, 255, 255, 0.4);
-            margin-top: 20px;
+            margin-top: 16px;
             letter-spacing: 2px;
             font-weight: 300;
             opacity: 0.6;
             transition: opacity 0.3s;
         }
-
-        .click-counter:hover {
-            opacity: 1;
-        }
+        .click-counter:hover { opacity: 1; }
 
         /* ===== ФУТЕР ===== */
         .footer {
-            margin-top: 26px;
+            margin-top: 16px;
             font-family: 'Anime Ace v3', 'Arial Black', 'Impact', sans-serif;
             font-size: 0.6rem;
             color: rgba(255, 255, 255, 0.25);
             letter-spacing: 1px;
             font-weight: 300;
             border-top: 1px solid rgba(255, 255, 255, 0.05);
-            padding-top: 18px;
-        }
-
-        /* ===== ЗВЁЗДЫ (Canvas) ===== */
-        #stars-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 2; /* Поверх затемнения, но под карточкой */
-            pointer-events: none; /* чтобы клики проходили сквозь */
+            padding-top: 14px;
         }
 
         /* ===== АДАПТИВ ===== */
         @media (max-width: 480px) {
             .card { padding: 24px 18px 32px; border-radius: 32px; }
-            .name { font-size: 2.0rem; }
+            .name { font-size: 2.2rem; }
             .avatar { width: 140px; height: 140px; border-radius: 4px; }
             .link-item { padding: 12px 16px; font-size: 0.9rem; }
             .badge { font-size: 0.75rem; }
+            .views-counter { top: 12px; right: 14px; font-size: 0.75rem; padding: 2px 10px 2px 6px; }
+            .audio-player { padding: 10px 12px 14px; }
         }
     </style>
 </head>
@@ -285,17 +354,25 @@
     <div class="overlay"></div>
     <div class="bottom-shadow"></div>
 
-    <!-- ===== ЗВЁЗДЫ (Canvas) ===== -->
+    <!-- ===== ЗВЁЗДЫ ===== -->
     <canvas id="stars-canvas"></canvas>
 
     <!-- ===== КАРТОЧКА ===== -->
     <div class="card">
 
+        <!-- СЧЁТЧИК ПРОСМОТРОВ -->
+        <div class="views-counter" id="viewsCounter">
+            <span class="eye">👁️</span>
+            <span class="count" id="viewCount">0</span>
+        </div>
+
         <div class="avatar">
             <img src="https://i.pinimg.com/1200x/00/35/7b/00357ba44ff37d63015e55780acdb4cf.jpg" alt="avatar angelov" loading="lazy">
         </div>
 
+        <!-- ПЕРЕЛИВАЮЩЕЕСЯ ИМЯ -->
         <div class="name">angelov</div>
+
         <div class="badge">
             <span>mid supp player</span> / love puck
         </div>
@@ -303,31 +380,144 @@
         <div class="divider"></div>
 
         <div class="links">
-
             <a href="https://steamcommunity.com/profiles/76561199858781159/" target="_blank" rel="noopener noreferrer" class="link-item">
                 <span class="label">steam</span>
             </a>
-
             <a href="https://t.me/stason812" target="_blank" rel="noopener noreferrer" class="link-item">
                 <span class="label">telegram</span>
             </a>
-
             <a href="https://discord.com/users/1191918956865388684" target="_blank" rel="noopener noreferrer" class="link-item">
                 <span class="label">discord</span>
             </a>
+        </div>
 
+        <!-- ===== АУДИОПЛЕЕР ===== -->
+        <div class="audio-player">
+            <div class="track-info">♫ Red Weather — Onda Andar</div>
+            <div class="controls">
+                <button id="playBtn">▶</button>
+                <div class="slider-container">
+                    <input type="range" id="timeSlider" value="0" step="0.1">
+                    <div style="display:flex; justify-content:space-between; padding:0 2px;">
+                        <span class="time-display" id="currentTime">0:00</span>
+                        <span class="time-display" id="durationTime">0:00</span>
+                    </div>
+                </div>
+            </div>
+            <div class="volume-row">
+                <span class="vol-icon">🔊</span>
+                <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.5">
+            </div>
         </div>
 
         <div class="click-counter" id="clickCounter">кликов по ссылкам: 0</div>
-
         <div class="footer">
             <span>made with stason</span>
         </div>
 
     </div>
 
+    <!-- ===== АУДИО ===== -->
+    <audio id="bgAudio" loop preload="auto">
+        <source src="https://drive.google.com/uc?export=download&id=1LfnFJ0fp9BO_w0KSdN38eup0XBI8WQDL" type="audio/mpeg">
+        Твой браузер не поддерживает аудио.
+    </audio>
+
     <script>
-        // ===== СЧЁТЧИК КЛИКОВ =====
+        // ============================================================
+        // 1. СЧЁТЧИК ПРОСМОТРОВ
+        // ============================================================
+        (function() {
+            const viewKey = 'stason812_views';
+            let views = parseInt(localStorage.getItem(viewKey)) || 0;
+            const lastVisitKey = 'stason812_last_visit';
+            const now = Date.now();
+            const last = parseInt(localStorage.getItem(lastVisitKey)) || 0;
+            if (now - last > 60000) {
+                views += 1;
+                localStorage.setItem(viewKey, views);
+                localStorage.setItem(lastVisitKey, now);
+            }
+            document.getElementById('viewCount').textContent = views;
+        })();
+
+        // ============================================================
+        // 2. АУДИОПЛЕЕР
+        // ============================================================
+        (function() {
+            const audio = document.getElementById('bgAudio');
+            const playBtn = document.getElementById('playBtn');
+            const timeSlider = document.getElementById('timeSlider');
+            const volumeSlider = document.getElementById('volumeSlider');
+            const currentTimeDisplay = document.getElementById('currentTime');
+            const durationDisplay = document.getElementById('durationTime');
+
+            function formatTime(sec) {
+                if (isNaN(sec)) return '0:00';
+                const m = Math.floor(sec / 60);
+                const s = Math.floor(sec % 60);
+                return m + ':' + (s < 10 ? '0' : '') + s;
+            }
+
+            function updateTime() {
+                if (audio.duration) {
+                    const percent = (audio.currentTime / audio.duration) * 100;
+                    timeSlider.value = percent;
+                    currentTimeDisplay.textContent = formatTime(audio.currentTime);
+                    durationDisplay.textContent = formatTime(audio.duration);
+                }
+            }
+
+            audio.addEventListener('loadedmetadata', function() {
+                durationDisplay.textContent = formatTime(audio.duration);
+                timeSlider.max = 100;
+            });
+
+            audio.addEventListener('timeupdate', updateTime);
+
+            audio.addEventListener('ended', function() {
+                if (!audio.loop) {
+                    audio.currentTime = 0;
+                    playBtn.textContent = '▶';
+                    timeSlider.value = 0;
+                    currentTimeDisplay.textContent = '0:00';
+                }
+            });
+
+            playBtn.addEventListener('click', function() {
+                if (audio.paused) {
+                    audio.play().catch(e => console.log('Автовоспроизведение заблокировано'));
+                    playBtn.textContent = '⏸';
+                } else {
+                    audio.pause();
+                    playBtn.textContent = '▶';
+                }
+            });
+
+            timeSlider.addEventListener('input', function() {
+                if (audio.duration) {
+                    const newTime = (this.value / 100) * audio.duration;
+                    audio.currentTime = newTime;
+                    currentTimeDisplay.textContent = formatTime(newTime);
+                }
+            });
+
+            volumeSlider.addEventListener('input', function() {
+                audio.volume = parseFloat(this.value);
+            });
+
+            document.addEventListener('click', function() {
+                if (audio.paused && audio.src && audio.src !== '') {
+                    audio.play().catch(() => {});
+                }
+            }, { once: false });
+
+            audio.volume = parseFloat(volumeSlider.value);
+        })();
+
+        // ============================================================
+        // 3. СЧЁТЧИК КЛИКОВ ПО ССЫЛКАМ
+        // ============================================================
         (function() {
             const counterEl = document.getElementById('clickCounter');
             let totalClicks = parseInt(localStorage.getItem('angelov_clicks_total')) || 0;
@@ -354,11 +544,12 @@
             updateCounterDisplay();
         })();
 
-        // ===== АНИМАЦИЯ ЗВЁЗД (падающие искры) =====
+        // ============================================================
+        // 4. ЗВЁЗДЫ (Canvas)
+        // ============================================================
         (function() {
             const canvas = document.getElementById('stars-canvas');
             const ctx = canvas.getContext('2d');
-
             let width, height;
             let stars = [];
 
@@ -369,13 +560,11 @@
             window.addEventListener('resize', resize);
             resize();
 
-            // Параметры звёзд
             const STAR_COUNT = 80;
             const MAX_SPEED = 1.2;
             const MIN_SIZE = 1.2;
             const MAX_SIZE = 2.8;
 
-            // Создаём звёзды
             for (let i = 0; i < STAR_COUNT; i++) {
                 stars.push({
                     x: Math.random() * width,
@@ -390,17 +579,12 @@
 
             function drawStars() {
                 ctx.clearRect(0, 0, width, height);
-
                 for (let s of stars) {
-                    // Движение
                     s.x += s.speedX;
                     s.y += s.speedY;
-
-                    // Мерцание
                     s.opacity += s.flicker * (Math.random() - 0.5);
                     s.opacity = Math.min(1, Math.max(0.1, s.opacity));
 
-                    // Если звезда упала за нижний край — возвращаем наверх
                     if (s.y > height) {
                         s.y = -10;
                         s.x = Math.random() * width;
@@ -408,7 +592,6 @@
                         s.speedY = Math.random() * MAX_SPEED + 0.3;
                     }
 
-                    // Рисуем звезду (светлая точка с ореолом)
                     const gradient = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.size * 3);
                     gradient.addColorStop(0, `rgba(255, 255, 255, ${s.opacity})`);
                     gradient.addColorStop(0.4, `rgba(255, 255, 200, ${s.opacity * 0.4})`);
@@ -419,16 +602,13 @@
                     ctx.fillStyle = gradient;
                     ctx.fill();
 
-                    // Ядро звезды
                     ctx.beginPath();
                     ctx.arc(s.x, s.y, s.size * 0.6, 0, Math.PI * 2);
                     ctx.fillStyle = `rgba(255, 255, 255, ${s.opacity * 0.9})`;
                     ctx.fill();
                 }
-
                 requestAnimationFrame(drawStars);
             }
-
             drawStars();
         })();
     </script>
