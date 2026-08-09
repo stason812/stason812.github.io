@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>angelov — mid player / umbrella user</title>
+    <title>angelov — mid supp player / love puck</title>
     <style>
         /* ===== ПОДКЛЮЧЕНИЕ ШРИФТА ANIME ACE v3 ЧЕРЕЗ CDN ===== */
         @font-face {
@@ -40,7 +40,7 @@
             overflow: hidden;
         }
 
-        /* ===== ВИДЕОФОН ===== */
+        /* ===== ВИДЕОФОН С ЗАТЕМНЕНИЕМ СНИЗУ ===== */
         .video-background {
             position: fixed;
             top: 0;
@@ -57,6 +57,7 @@
             object-fit: cover;
         }
 
+        /* Основное затемнение (сверху) — оставляем как было */
         .overlay {
             position: fixed;
             top: 0;
@@ -65,6 +66,18 @@
             height: 100%;
             background: rgba(0, 0, 0, 0.5);
             z-index: 1;
+        }
+
+        /* ДОПОЛНИТЕЛЬНОЕ ЗАТЕМНЕНИЕ СНИЗУ (градиент) */
+        .bottom-shadow {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 60%;
+            background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%);
+            z-index: 1;
+            pointer-events: none; /* чтобы не мешать кликам */
         }
 
         /* ===== КАРТОЧКА (СТЕКЛО) ===== */
@@ -88,11 +101,11 @@
             transform: scale(1.005);
         }
 
-        /* ===== АВАТАР (ПОЧТИ КВАДРАТ, МАЛЕНЬКОЕ СКРУГЛЕНИЕ) ===== */
+        /* ===== АВАТАР ===== */
         .avatar {
             width: 180px;
             height: 180px;
-            border-radius: 6px;   /* Едва заметное скругление */
+            border-radius: 6px;
             margin: 0 auto 18px;
             background: rgba(255, 255, 255, 0.05);
             border: 2px solid rgba(255, 255, 255, 0.2);
@@ -155,7 +168,7 @@
             margin: 22px auto 26px;
         }
 
-        /* ===== ССЫЛКИ (ТЕКСТ ПО ЦЕНТРУ) ===== */
+        /* ===== ССЫЛКИ ===== */
         .links {
             display: flex;
             flex-direction: column;
@@ -238,6 +251,17 @@
             padding-top: 18px;
         }
 
+        /* ===== ЗВЁЗДЫ (Canvas) ===== */
+        #stars-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2; /* Поверх затемнения, но под карточкой */
+            pointer-events: none; /* чтобы клики проходили сквозь */
+        }
+
         /* ===== АДАПТИВ ===== */
         @media (max-width: 480px) {
             .card { padding: 24px 18px 32px; border-radius: 32px; }
@@ -256,7 +280,13 @@
             <source src="https://www.image2url.com/r2/default/videos/1786313358394-421c86f5-2310-4697-8dfb-eeae79a5bbf2.mp4" type="video/mp4">
         </video>
     </div>
+
+    <!-- ===== ЗАТЕМНЕНИЯ ===== -->
     <div class="overlay"></div>
+    <div class="bottom-shadow"></div>
+
+    <!-- ===== ЗВЁЗДЫ (Canvas) ===== -->
+    <canvas id="stars-canvas"></canvas>
 
     <!-- ===== КАРТОЧКА ===== -->
     <div class="card">
@@ -267,7 +297,7 @@
 
         <div class="name">angelov</div>
         <div class="badge">
-            <span>mid player</span> / umbrella user
+            <span>mid supp player</span> / love puck
         </div>
 
         <div class="divider"></div>
@@ -322,6 +352,84 @@
             });
 
             updateCounterDisplay();
+        })();
+
+        // ===== АНИМАЦИЯ ЗВЁЗД (падающие искры) =====
+        (function() {
+            const canvas = document.getElementById('stars-canvas');
+            const ctx = canvas.getContext('2d');
+
+            let width, height;
+            let stars = [];
+
+            function resize() {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            // Параметры звёзд
+            const STAR_COUNT = 80;
+            const MAX_SPEED = 1.2;
+            const MIN_SIZE = 1.2;
+            const MAX_SIZE = 2.8;
+
+            // Создаём звёзды
+            for (let i = 0; i < STAR_COUNT; i++) {
+                stars.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    size: Math.random() * (MAX_SIZE - MIN_SIZE) + MIN_SIZE,
+                    speedX: (Math.random() - 0.5) * MAX_SPEED * 0.5,
+                    speedY: Math.random() * MAX_SPEED + 0.3,
+                    opacity: Math.random() * 0.8 + 0.2,
+                    flicker: Math.random() * 0.02
+                });
+            }
+
+            function drawStars() {
+                ctx.clearRect(0, 0, width, height);
+
+                for (let s of stars) {
+                    // Движение
+                    s.x += s.speedX;
+                    s.y += s.speedY;
+
+                    // Мерцание
+                    s.opacity += s.flicker * (Math.random() - 0.5);
+                    s.opacity = Math.min(1, Math.max(0.1, s.opacity));
+
+                    // Если звезда упала за нижний край — возвращаем наверх
+                    if (s.y > height) {
+                        s.y = -10;
+                        s.x = Math.random() * width;
+                        s.speedX = (Math.random() - 0.5) * MAX_SPEED * 0.5;
+                        s.speedY = Math.random() * MAX_SPEED + 0.3;
+                    }
+
+                    // Рисуем звезду (светлая точка с ореолом)
+                    const gradient = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.size * 3);
+                    gradient.addColorStop(0, `rgba(255, 255, 255, ${s.opacity})`);
+                    gradient.addColorStop(0.4, `rgba(255, 255, 200, ${s.opacity * 0.4})`);
+                    gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+
+                    ctx.beginPath();
+                    ctx.arc(s.x, s.y, s.size * 3, 0, Math.PI * 2);
+                    ctx.fillStyle = gradient;
+                    ctx.fill();
+
+                    // Ядро звезды
+                    ctx.beginPath();
+                    ctx.arc(s.x, s.y, s.size * 0.6, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255, 255, 255, ${s.opacity * 0.9})`;
+                    ctx.fill();
+                }
+
+                requestAnimationFrame(drawStars);
+            }
+
+            drawStars();
         })();
     </script>
 
