@@ -150,26 +150,16 @@
         }
         .avatar:hover { border-color: rgba(255, 255, 255, 0.5); }
 
-        /* ===== ПЕРЕЛИВАЮЩЕЕСЯ ИМЯ ===== */
+        /* ===== ИМЯ (ОБЫЧНОЕ, БЕЗ ПЕРЕЛИВАНИЯ) ===== */
         .name {
             font-family: 'Anime Ace v3', 'Arial Black', 'Impact', sans-serif;
             font-weight: 700;
-            font-size: 2.8rem;
-            letter-spacing: 3px;
+            font-size: 2.6rem;
+            letter-spacing: 2px;
+            color: #ffffff;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
             margin-bottom: 6px;
-            background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3, #ff6b6b);
-            background-size: 300% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: shimmer 4s linear infinite;
-            text-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
             word-break: break-word;
-        }
-
-        @keyframes shimmer {
-            0% { background-position: 0% center; }
-            100% { background-position: 300% center; }
         }
 
         /* ===== ОПИСАНИЕ ===== */
@@ -332,7 +322,7 @@
         /* ===== АДАПТИВ ===== */
         @media (max-width: 480px) {
             .card { padding: 24px 18px 32px; border-radius: 32px; }
-            .name { font-size: 2.2rem; }
+            .name { font-size: 2.0rem; }
             .avatar { width: 140px; height: 140px; border-radius: 4px; }
             .link-item { padding: 12px 16px; font-size: 0.9rem; }
             .badge { font-size: 0.75rem; }
@@ -370,7 +360,6 @@
             <img src="https://i.pinimg.com/1200x/00/35/7b/00357ba44ff37d63015e55780acdb4cf.jpg" alt="avatar angelov" loading="lazy">
         </div>
 
-        <!-- ПЕРЕЛИВАЮЩЕЕСЯ ИМЯ -->
         <div class="name">angelov</div>
 
         <div class="badge">
@@ -425,7 +414,30 @@
 
     <script>
         // ============================================================
-        // 1. СЧЁТЧИК ПРОСМОТРОВ
+        // 1. ПЕРЕЛИВАЮЩЕЕСЯ НАЗВАНИЕ ВКЛАДКИ (буквы пропадают/появляются)
+        // ============================================================
+        (function() {
+            const originalTitle = 'angelov — mid supp player / love puck';
+            const chars = originalTitle.split('');
+            let index = 0;
+
+            function updateTitle() {
+                const newChars = chars.map((char, i) => {
+                    if (i === index) {
+                        return ' ';
+                    }
+                    return char;
+                });
+                document.title = newChars.join('');
+                index = (index + 1) % chars.length;
+            }
+
+            setInterval(updateTitle, 200);
+            setTimeout(() => document.title = originalTitle, 100);
+        })();
+
+        // ============================================================
+        // 2. СЧЁТЧИК ПРОСМОТРОВ
         // ============================================================
         (function() {
             const viewKey = 'stason812_views';
@@ -442,7 +454,7 @@
         })();
 
         // ============================================================
-        // 2. АУДИОПЛЕЕР
+        // 3. АУДИОПЛЕЕР (исправленное воспроизведение)
         // ============================================================
         (function() {
             const audio = document.getElementById('bgAudio');
@@ -486,8 +498,12 @@
 
             playBtn.addEventListener('click', function() {
                 if (audio.paused) {
-                    audio.play().catch(e => console.log('Автовоспроизведение заблокировано'));
-                    playBtn.textContent = '⏸';
+                    audio.play()
+                        .then(() => playBtn.textContent = '⏸')
+                        .catch(err => {
+                            console.warn('Ошибка воспроизведения:', err);
+                            alert('Не удалось воспроизвести трек. Проверь ссылку на файл.');
+                        });
                 } else {
                     audio.pause();
                     playBtn.textContent = '▶';
@@ -516,7 +532,7 @@
         })();
 
         // ============================================================
-        // 3. СЧЁТЧИК КЛИКОВ ПО ССЫЛКАМ
+        // 4. СЧЁТЧИК КЛИКОВ ПО ССЫЛКАМ
         // ============================================================
         (function() {
             const counterEl = document.getElementById('clickCounter');
@@ -545,7 +561,7 @@
         })();
 
         // ============================================================
-        // 4. ЗВЁЗДЫ (Canvas)
+        // 5. ЗВЁЗДЫ (Canvas)
         // ============================================================
         (function() {
             const canvas = document.getElementById('stars-canvas');
