@@ -850,3 +850,32 @@
 
                     s.opacity += s.flicker * (Math.random() - 0.5);
                     s.opacity = Math.min(1, Math.max(0.1, s.opacity));
+
+                    if (s.x < -50) s.x = width + 50;
+                    if (s.x > width + 50) s.x = -50;
+                    if (s.y < -50) s.y = height + 50;
+                    if (s.y > height + 50) s.y = -50;
+
+                    const gradient = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.size * 3);
+                    gradient.addColorStop(0, `rgba(255, 255, 255, ${s.opacity})`);
+                    gradient.addColorStop(0.4, `rgba(255, 255, 200, ${s.opacity * 0.4})`);
+                    gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+
+                    ctx.beginPath();
+                    ctx.arc(s.x, s.y, s.size * 3, 0, Math.PI * 2);
+                    ctx.fillStyle = gradient;
+                    ctx.fill();
+
+                    ctx.beginPath();
+                    ctx.arc(s.x, s.y, s.size * 0.6, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255, 255, 255, ${s.opacity * 0.9})`;
+                    ctx.fill();
+                }
+
+                requestAnimationFrame(drawStars);
+            }
+            drawStars();
+        })();
+    </script>
+</body>
+</html>
