@@ -216,7 +216,7 @@
             transform: translateX(-50%) scale(1);
         }
 
-        /* ===== СТАТУС ИГРЫ ПОД НИКОМ ===== */
+        /* ===== СТАТУС ИГРЫ ===== */
         .game-status {
             font-family: 'Anime Ace v3', 'Arial Black', 'Impact', sans-serif;
             font-size: 0.7rem;
@@ -492,7 +492,7 @@
 
         <!-- ===== СТАТУС ИГРЫ С ИКОНКОЙ ===== -->
         <div class="game-status">
-            <span class="highlight">Рейтинговая Phantom Lancer (Ур.17)</span>
+            <span class="highlight" id="levelDisplay">Рейтинговая Phantom Lancer (Ур.1)</span>
             <img class="pl-icon" src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/phantom_lancer.png" alt="PL">
         </div>
 
@@ -672,8 +672,60 @@
             volDisplay.textContent = Math.round(parseFloat(volumeSlider.value) * 100) + '%';
         })();
 
-        // ===== 4. СТАТУС ИГРЫ (убрал кнопки, оставил только текст с иконкой) =====
-        // (статус теперь статичный, как ты просил)
+        // ===== 4. АВТООБНОВЛЕНИЕ УРОВНЯ PHANTOM LANCER =====
+        (function() {
+            const display = document.getElementById('levelDisplay');
+            if (!display) return;
+
+            let level = 1;
+            const maxLevel = 30;
+            let timeoutId = null;
+
+            function updateDisplay() {
+                display.textContent = `Рейтинговая Phantom Lancer (Ур.${level})`;
+            }
+
+            function levelUp() {
+                if (level < maxLevel) {
+                    level++;
+                    updateDisplay();
+                    if (level === maxLevel) {
+                        // Достигнут максимум — через 5 минут сброс
+                        if (timeoutId) clearTimeout(timeoutId);
+                        timeoutId = setTimeout(() => {
+                            level = 1;
+                            updateDisplay();
+                            // Запускаем цикл заново
+                            startLeveling();
+                        }, 300000); // 5 минут
+                    } else {
+                        scheduleNextLevel();
+                    }
+                }
+            }
+
+            function scheduleNextLevel() {
+                if (timeoutId) clearTimeout(timeoutId);
+                timeoutId = setTimeout(levelUp, 120000); // 2 минуты
+            }
+
+            function startLeveling() {
+                // Если уже на максимуме — ждём сброса
+                if (level === maxLevel) {
+                    if (timeoutId) clearTimeout(timeoutId);
+                    timeoutId = setTimeout(() => {
+                        level = 1;
+                        updateDisplay();
+                        startLeveling();
+                    }, 300000);
+                    return;
+                }
+                scheduleNextLevel();
+            }
+
+            updateDisplay();
+            startLeveling();
+        })();
 
         // ===== 5. ЗВЁЗДЫ =====
         (function() {
