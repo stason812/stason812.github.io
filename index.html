@@ -490,7 +490,7 @@
             <img class="secret-image" src="https://i.pinimg.com/736x/61/ad/26/61ad263f5164a1e8ef17384e81fc4f0f.jpg" alt="" loading="lazy">
         </div>
 
-        <!-- ===== СТАТУС ИГРЫ С ИКОНКОЙ ===== -->
+        <!-- ===== СТАТУС ИГРЫ С АВТООБНОВЛЕНИЕМ УРОВНЯ ===== -->
         <div class="game-status">
             <span class="highlight" id="levelDisplay">Рейтинговая Phantom Lancer (Ур.1)</span>
             <img class="pl-icon" src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/phantom_lancer.png" alt="PL">
@@ -690,14 +690,12 @@
                     level++;
                     updateDisplay();
                     if (level === maxLevel) {
-                        // Достигнут максимум — через 5 минут сброс
                         if (timeoutId) clearTimeout(timeoutId);
                         timeoutId = setTimeout(() => {
                             level = 1;
                             updateDisplay();
-                            // Запускаем цикл заново
                             startLeveling();
-                        }, 300000); // 5 минут
+                        }, 300000);
                     } else {
                         scheduleNextLevel();
                     }
@@ -706,11 +704,10 @@
 
             function scheduleNextLevel() {
                 if (timeoutId) clearTimeout(timeoutId);
-                timeoutId = setTimeout(levelUp, 120000); // 2 минуты
+                timeoutId = setTimeout(levelUp, 120000);
             }
 
             function startLeveling() {
-                // Если уже на максимуме — ждём сброса
                 if (level === maxLevel) {
                     if (timeoutId) clearTimeout(timeoutId);
                     timeoutId = setTimeout(() => {
