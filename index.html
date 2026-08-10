@@ -722,7 +722,7 @@
         })();
 
 // ============================================================
-// 4. КОММЕНТАРИИ (JSONBin + локальный fallback)
+// 4. КОММЕНТАРИИ (JSONBin — новый ключ)
 // ============================================================
 (function() {
     const container = document.getElementById('commentsContainer');
@@ -731,20 +731,18 @@
     const submitBtn = document.getElementById('commentSubmit');
 
     const BIN_ID = '6a79d9edda38895dfed11dc3';
-    const MASTER_KEY = '$2a$10$8nJXWYuV9mZ8m2y1cmRoF09fp8vR05wXz4jJhzFLO6rmuAIgobES';
+    const MASTER_KEY = '$2a$10$xuRXS1IBjY9RecMVeXaWWebJhP0tvqSksCoKBtmGhbD9K8ZvMjy/W';
     const LOCAL_KEY = 'stason812_comments_fallback';
 
-    // Загрузка из JSONBin
     async function loadComments() {
         try {
             const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
                 headers: { 'X-Master-Key': MASTER_KEY },
-                cache: 'no-store' // принудительно игнорируем кэш
+                cache: 'no-store'
             });
             if (!response.ok) throw new Error('Ошибка загрузки');
             const data = await response.json();
             const comments = data.record || [];
-            // Сохраняем в localStorage как резервную копию
             localStorage.setItem(LOCAL_KEY, JSON.stringify(comments));
             return comments;
         } catch (e) {
@@ -757,7 +755,6 @@
         }
     }
 
-    // Сохранение в JSONBin
     async function saveComments(comments) {
         try {
             const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
@@ -768,12 +765,13 @@
                 },
                 body: JSON.stringify(comments)
             });
-            if (!response.ok) throw new Error('Ошибка сохранения');
-            // Обновляем резервную копию
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Ошибка ${response.status}: ${errorText}`);
+            }
             localStorage.setItem(LOCAL_KEY, JSON.stringify(comments));
         } catch (e) {
             console.warn('Ошибка сохранения в JSONBin, сохраняю локально:', e);
-            // Сохраняем в localStorage как fallback
             localStorage.setItem(LOCAL_KEY, JSON.stringify(comments));
         }
     }
