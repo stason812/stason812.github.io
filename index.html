@@ -144,12 +144,12 @@
         }
         .card .avatar { animation-delay: 0.1s; }
         .card .name-wrapper { animation-delay: 0.2s; }
+        .card .game-status { animation-delay: 0.25s; }
         .card .badge { animation-delay: 0.3s; }
         .card .divider { animation-delay: 0.35s; }
         .card .links { animation-delay: 0.4s; }
         .card .audio-player { animation-delay: 0.5s; }
-        .card .status-section { animation-delay: 0.6s; }
-        .card .footer { animation-delay: 0.7s; }
+        .card .footer { animation-delay: 0.6s; }
 
         @keyframes fadeUp {
             to { opacity: 1; transform: translateY(0); }
@@ -216,9 +216,32 @@
             transform: translateX(-50%) scale(1);
         }
 
+        /* ===== СТАТУС ИГРЫ ПОД НИКОМ ===== */
+        .game-status {
+            font-family: 'Anime Ace v3', 'Arial Black', 'Impact', sans-serif;
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.3);
+            letter-spacing: 0.5px;
+            margin-top: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .game-status .highlight {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        .game-status .pl-icon {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+            filter: grayscale(0.3);
+            opacity: 0.6;
+        }
+
         .badge {
             display: inline-block;
-            margin-top: 2px;
+            margin-top: 6px;
             font-family: 'Anime Ace v3', 'Arial Black', 'Impact', sans-serif;
             font-weight: 400;
             font-size: 0.75rem;
@@ -236,7 +259,7 @@
             width: 40px;
             height: 1px;
             background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
-            margin: 18px auto 20px;
+            margin: 16px auto 18px;
         }
 
         /* ===== ССЫЛКИ ===== */
@@ -414,60 +437,8 @@
             font-family: 'Anime Ace v3', 'Arial Black', 'Impact', sans-serif;
         }
 
-        /* ===== СТАТУС "СЕЙЧАС ИГРАЮ" ===== */
-        .status-section {
-            margin-top: 14px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-        }
-        .status-label {
-            font-size: 0.55rem;
-            color: rgba(255, 255, 255, 0.2);
-            letter-spacing: 1.5px;
-            font-family: 'Anime Ace v3', 'Arial Black', 'Impact', sans-serif;
-            text-transform: uppercase;
-        }
-        .status-buttons {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        .status-btn {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 30px;
-            padding: 3px 12px;
-            color: rgba(255, 255, 255, 0.3);
-            font-family: 'Anime Ace v3', 'Arial Black', 'Impact', sans-serif;
-            font-size: 0.55rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .status-btn:hover {
-            background: rgba(255, 255, 255, 0.06);
-            color: rgba(255, 255, 255, 0.6);
-        }
-        .status-btn.active {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.12);
-            color: #ffffff;
-        }
-        .status-display {
-            font-size: 0.7rem;
-            color: rgba(255, 255, 255, 0.3);
-            margin-top: 2px;
-            font-family: 'Anime Ace v3', 'Arial Black', 'Impact', sans-serif;
-            min-height: 1.2rem;
-        }
-        .status-display .highlight {
-            color: rgba(255, 255, 255, 0.7);
-        }
-
         .footer {
-            margin-top: 14px;
+            margin-top: 16px;
             font-family: 'Anime Ace v3', 'Arial Black', 'Impact', sans-serif;
             font-size: 0.5rem;
             color: rgba(255, 255, 255, 0.15);
@@ -485,6 +456,7 @@
             .badge { font-size: 0.65rem; }
             .intro-text { font-size: 2rem; letter-spacing: 3px; }
             .secret-image { width: 70px; height: 70px; top: -90px; }
+            .game-status { font-size: 0.6rem; }
         }
     </style>
 </head>
@@ -518,6 +490,12 @@
             <img class="secret-image" src="https://i.pinimg.com/736x/61/ad/26/61ad263f5164a1e8ef17384e81fc4f0f.jpg" alt="" loading="lazy">
         </div>
 
+        <!-- ===== СТАТУС ИГРЫ С ИКОНКОЙ ===== -->
+        <div class="game-status">
+            <span class="highlight">Рейтинговая Phantom Lancer (Ур.17)</span>
+            <img class="pl-icon" src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/phantom_lancer.png" alt="PL">
+        </div>
+
         <div class="badge">
             <span>mid supp player</span> / love puck
         </div>
@@ -537,7 +515,7 @@
         </div>
 
         <div class="audio-player">
-            <div class="track-info">♫ Red Weather — Onda Andar</div>
+            <div class="track-info">Red Weather — Onda Andar</div>
             <div class="controls">
                 <button id="playBtn">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
@@ -565,17 +543,6 @@
                 <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.5">
                 <span class="volume-value" id="volumeValue">50%</span>
             </div>
-        </div>
-
-        <div class="status-section">
-            <div class="status-label">сейчас играю</div>
-            <div class="status-buttons">
-                <button class="status-btn" data-status="dota">Dota 2</button>
-                <button class="status-btn" data-status="cs">CS2</button>
-                <button class="status-btn" data-status="stream">Стрим</button>
-                <button class="status-btn" data-status="offline">Оффлайн</button>
-            </div>
-            <div class="status-display" id="statusDisplay">⚡ <span class="highlight">Dota 2</span> — в поиске</div>
         </div>
 
         <div class="footer">
@@ -705,50 +672,10 @@
             volDisplay.textContent = Math.round(parseFloat(volumeSlider.value) * 100) + '%';
         })();
 
-        // ===== 4. ФОНОВЫЙ ЗВУК ПРИ НАВЕДЕНИИ =====
-        (function() {
-            let ctx = null;
-            const els = document.querySelectorAll('.link-item, .status-btn, #playBtn');
-            els.forEach(el => {
-                el.addEventListener('mouseenter', () => {
-                    try {
-                        if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
-                        const osc = ctx.createOscillator();
-                        const gain = ctx.createGain();
-                        osc.connect(gain);
-                        gain.connect(ctx.destination);
-                        osc.frequency.value = 700 + Math.random() * 500;
-                        osc.type = 'sine';
-                        gain.gain.setValueAtTime(0.02, ctx.currentTime);
-                        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
-                        osc.start(ctx.currentTime);
-                        osc.stop(ctx.currentTime + 0.08);
-                    } catch (_) {}
-                });
-            });
-        })();
+        // ===== 4. СТАТУС ИГРЫ (убрал кнопки, оставил только текст с иконкой) =====
+        // (статус теперь статичный, как ты просил)
 
-        // ===== 5. СТАТУС "СЕЙЧАС ИГРАЮ" =====
-        (function() {
-            const btns = document.querySelectorAll('.status-btn');
-            const display = document.getElementById('statusDisplay');
-            const map = { dota: 'Dota 2', cs: 'CS2', stream: 'Стрим', offline: 'Оффлайн' };
-            let current = localStorage.getItem('stason_status') || 'dota';
-
-            function setStatus(status) {
-                current = status;
-                localStorage.setItem('stason_status', status);
-                btns.forEach(b => b.classList.toggle('active', b.dataset.status === status));
-                const label = map[status] || 'Dota 2';
-                const icon = status === 'offline' ? '🌙' : '⚡';
-                display.innerHTML = `${icon} <span class="highlight">${label}</span> — ${status === 'offline' ? 'не в игре' : 'в поиске'}`;
-            }
-
-            btns.forEach(b => b.addEventListener('click', () => setStatus(b.dataset.status)));
-            setStatus(current);
-        })();
-
-        // ===== 6. ЗВЁЗДЫ =====
+        // ===== 5. ЗВЁЗДЫ =====
         (function() {
             const canvas = document.getElementById('stars-canvas');
             const ctx = canvas.getContext('2d');
@@ -819,7 +746,7 @@
             draw();
         })();
 
-        // ===== 7. ПЫЛЬЦА ПОД МЫШЬЮ =====
+        // ===== 6. ПЫЛЬЦА =====
         (function() {
             const canvas = document.getElementById('dust-canvas');
             const ctx = canvas.getContext('2d');
@@ -837,18 +764,18 @@
             document.addEventListener('mousemove', e => {
                 mx = e.clientX;
                 my = e.clientY;
-                for (let i = 0; i < 3; i++) {
+                for (let i = 0; i < 2; i++) {
                     particles.push({
-                        x: mx + (Math.random() - 0.5) * 8,
-                        y: my + (Math.random() - 0.5) * 8,
-                        vx: (Math.random() - 0.5) * 1.5,
-                        vy: (Math.random() - 0.5) * 1.5 - 0.5,
+                        x: mx + (Math.random() - 0.5) * 6,
+                        y: my + (Math.random() - 0.5) * 6,
+                        vx: (Math.random() - 0.5) * 1.2,
+                        vy: (Math.random() - 0.5) * 1.2 - 0.3,
                         life: 1,
-                        decay: 0.01 + Math.random() * 0.02,
-                        size: 2 + Math.random() * 4
+                        decay: 0.012 + Math.random() * 0.015,
+                        size: 2 + Math.random() * 3
                     });
                 }
-                if (particles.length > 200) particles.splice(0, 50);
+                if (particles.length > 150) particles.splice(0, 30);
             });
 
             function drawDust() {
@@ -864,8 +791,8 @@
                         continue;
                     }
                     ctx.beginPath();
-                    ctx.arc(p.x, p.y, p.size * p.life * 0.8, 0, Math.PI * 2);
-                    ctx.fillStyle = `rgba(255,255,255,${p.life * 0.15})`;
+                    ctx.arc(p.x, p.y, p.size * p.life * 0.7, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255,255,255,${p.life * 0.12})`;
                     ctx.fill();
                 }
                 requestAnimationFrame(drawDust);
