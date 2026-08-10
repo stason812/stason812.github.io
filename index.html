@@ -5,62 +5,475 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>ANGELOV</title>
     <style>
-        /* ... все стили как были, плюс добавляю новые ... */
+        @font-face {
+            font-family: 'Anime Ace v3';
+            src: url('https://fonts.cdnfonts.com/s/14842/AnimeAcev3.woff') format('woff');
+            font-weight: 400;
+            font-style: normal;
+            font-display: swap;
+        }
+        @font-face {
+            font-family: 'Anime Ace v3';
+            src: url('https://fonts.cdnfonts.com/s/14842/AnimeAcev3Bold.woff') format('woff');
+            font-weight: 700;
+            font-style: normal;
+            font-display: swap;
+        }
 
-        /* ===== КЛИК-ЭФФЕКТ ДЛЯ КНОПОК ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #0a0a0a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Anime Ace v3', 'Arial Black', 'Impact', sans-serif;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            cursor: default;
+        }
+
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .video-background video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1;
+        }
+        .bottom-shadow {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 60%;
+            background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        #stars-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .card {
+            position: relative;
+            z-index: 10;
+            max-width: 480px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 48px 48px 36px 36px;
+            padding: 32px 28px 40px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+            transition: transform 0.25s ease;
+            text-align: center;
+        }
+        .card:hover {
+            transform: scale(1.005);
+        }
+
+        /* ===== АНИМИРОВАННОЕ ПОЯВЛЕНИЕ ===== */
+        .card > * {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUp 0.6s ease forwards;
+        }
+        .card .avatar { animation-delay: 0.1s; }
+        .card .name { animation-delay: 0.2s; }
+        .card .badge { animation-delay: 0.3s; }
+        .card .divider { animation-delay: 0.35s; }
+        .card .links { animation-delay: 0.4s; }
+        .card .audio-player { animation-delay: 0.5s; }
+        .card .footer { animation-delay: 0.6s; }
+        .card .comments-section { animation-delay: 0.7s; }
+
+        @keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .avatar {
+            width: 180px;
+            height: 180px;
+            border-radius: 6px;
+            margin: 0 auto 18px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            transition: border 0.3s;
+        }
+        .avatar video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            filter: grayscale(100%) contrast(1.1);
+        }
+        .avatar:hover {
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .name {
+            font-family: 'Anime Ace v3', 'Arial Black', 'Impact', sans-serif;
+            font-weight: 700;
+            font-size: 2.6rem;
+            letter-spacing: 2px;
+            color: #ffffff;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            margin-bottom: 6px;
+            word-break: break-word;
+        }
+
+        .badge {
+            display: inline-block;
+            margin-top: 2px;
+            font-family: 'Anime Ace v3', 'Arial Black', 'Impact', sans-serif;
+            font-weight: 400;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            color: #f0f0f0;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 6px 18px;
+            border-radius: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(4px);
+            text-transform: uppercase;
+        }
+        .badge span { color: #ffffff; font-weight: 700; }
+
+        .divider {
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            margin: 22px auto 26px;
+        }
+
+        .links { display: flex; flex-direction: column; gap: 14px; margin-top: 6px; }
         .link-item {
-            /* ... существующие стили ... */
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 60px;
+            padding: 14px 22px;
+            text-decoration: none;
+            color: #ffffff;
+            font-family: 'Anime Ace v3', 'Arial Black', 'Impact', sans-serif;
+            font-weight: 400;
+            font-size: 1.05rem;
             transition: all 0.15s ease;
+            backdrop-filter: blur(4px);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
         }
         .link-item:active {
             transform: scale(0.92);
             background: rgba(255, 255, 255, 0.18);
             border-color: rgba(255, 255, 255, 0.4);
         }
+        .link-item::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            transition: left 0.5s;
+        }
+        .link-item:hover::before { left: 100%; }
+        .link-item:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: scale(1.01);
+            color: #ffffff;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.05);
+        }
+        .link-item .label { text-align: center; letter-spacing: 0.5px; }
 
-        /* ===== СТАТУС DISCORD ===== */
-        .discord-status {
-            margin-top: 12px;
-            padding: 6px 12px;
-            border-radius: 40px;
-            background: rgba(0, 0, 0, 0.2);
+        .audio-player {
+            margin-top: 20px;
+            padding: 12px 16px 16px;
+            background: rgba(0, 0, 0, 0.25);
             backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            display: inline-flex;
-            align-items: center;
+            border-radius: 60px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            flex-direction: column;
             gap: 8px;
-            font-size: 0.75rem;
+        }
+        .audio-player .track-info {
+            font-size: 0.7rem;
             color: rgba(255, 255, 255, 0.5);
+            letter-spacing: 0.5px;
+            text-align: center;
             font-family: 'Anime Ace v3', 'Arial Black', 'Impact', sans-serif;
         }
-        .discord-status .online-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            display: inline-block;
-            background: #23a55a; /* зелёный = онлайн */
-            box-shadow: 0 0 8px rgba(35, 165, 90, 0.4);
+        .audio-player .controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
-        .discord-status .offline-dot {
-            background: #80848e; /* серый = оффлайн */
-            box-shadow: none;
+        .audio-player .controls button {
+            background: none;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 30px;
+            transition: background 0.2s, opacity 0.2s;
+            background: rgba(255,255,255,0.05);
+            flex-shrink: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .discord-status .status-text {
-            letter-spacing: 0.3px;
+        .audio-player .controls button:hover {
+            background: rgba(255,255,255,0.15);
         }
-        .discord-status .activity-text {
+        .audio-player .controls button svg {
+            display: block;
+            color: #ffffff;
+            transition: opacity 0.2s;
+        }
+        .audio-player .controls button:hover svg {
+            opacity: 0.7;
+        }
+        .audio-player .controls .slider-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .audio-player .controls .slider-container input[type="range"] {
+            width: 100%; height: 4px;
+            -webkit-appearance: none; appearance: none;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px; outline: none;
+        }
+        .audio-player .controls .slider-container input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none;
+            width: 12px; height: 12px; border-radius: 50%;
+            background: #ffffff; cursor: pointer;
+            box-shadow: 0 0 8px rgba(255,255,255,0.3);
+        }
+        .audio-player .controls .slider-container input[type="range"]::-moz-range-thumb {
+            width: 12px; height: 12px; border-radius: 50%;
+            background: #ffffff; cursor: pointer; border: none;
+        }
+        .audio-player .time-display {
+            font-size: 0.6rem; color: rgba(255, 255, 255, 0.4);
+            min-width: 32px; text-align: center;
+            font-family: 'Anime Ace v3', 'Arial Black', 'Impact', sans-serif;
+        }
+        .audio-player .volume-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0 4px;
+        }
+        .audio-player .volume-row .vol-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+        .audio-player .volume-row .vol-icon svg {
+            display: block;
+            stroke: rgba(255, 255, 255, 0.5);
+        }
+        .audio-player .volume-row input[type="range"] {
+            flex: 1; height: 3px;
+            -webkit-appearance: none; appearance: none;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px; outline: none;
+        }
+        .audio-player .volume-row input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none;
+            width: 10px; height: 10px; border-radius: 50%;
+            background: #ffffff; cursor: pointer;
+        }
+        .audio-player .volume-row input[type="range"]::-moz-range-thumb {
+            width: 10px; height: 10px; border-radius: 50%;
+            background: #ffffff; cursor: pointer; border: none;
+        }
+        .volume-value {
+            font-size: 0.6rem;
             color: rgba(255, 255, 255, 0.3);
-            font-size: 0.65rem;
-            margin-left: 4px;
+            min-width: 28px;
+            text-align: center;
+            font-family: 'Anime Ace v3', 'Arial Black', 'Impact', sans-serif;
+        }
+
+        .footer {
+            margin-top: 16px;
+            font-family: 'Anime Ace v3', 'Arial Black', 'Impact', sans-serif;
+            font-size: 0.6rem;
+            color: rgba(255, 255, 255, 0.25);
+            letter-spacing: 1px;
+            font-weight: 300;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 14px;
+        }
+
+        /* ===== КОММЕНТАРИИ ===== */
+        .comments-section {
+            margin-top: 22px;
+            padding: 16px 12px 12px;
+            background: rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(8px);
+            border-radius: 28px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .comments-section .comments-title {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: rgba(255, 255, 255, 0.2);
+            margin-bottom: 10px;
+            font-family: 'Anime Ace v3', 'Arial Black', 'Impact', sans-serif;
+        }
+        .comment-item {
+            text-align: left;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        .comment-item .comment-author {
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.8);
+            margin-right: 6px;
+        }
+        .comment-item .comment-time {
+            font-size: 0.5rem;
+            color: rgba(255, 255, 255, 0.2);
+            float: right;
+        }
+        .comment-form {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        .comment-form input {
+            flex: 1;
+            min-width: 80px;
+            padding: 6px 12px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(0, 0, 0, 0.2);
+            color: #fff;
+            font-size: 0.7rem;
+            font-family: 'Anime Ace v3', 'Arial Black', 'Impact', sans-serif;
+            outline: none;
+            transition: border 0.2s;
+        }
+        .comment-form input:focus {
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        .comment-form button {
+            padding: 6px 16px;
+            border-radius: 30px;
+            border: none;
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            font-size: 0.7rem;
+            cursor: pointer;
+            font-family: 'Anime Ace v3', 'Arial Black', 'Impact', sans-serif;
+            transition: background 0.2s;
+        }
+        .comment-form button:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        .comments-container {
+            max-height: 140px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.05) transparent;
+        }
+        .comments-container::-webkit-scrollbar {
+            width: 3px;
+        }
+        .comments-container::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        @media (max-width: 480px) {
+            .card { padding: 24px 18px 32px; border-radius: 32px; }
+            .name { font-size: 2.0rem; }
+            .avatar { width: 140px; height: 140px; border-radius: 4px; }
+            .link-item { padding: 12px 16px; font-size: 0.9rem; }
+            .badge { font-size: 0.75rem; }
+            .audio-player { padding: 10px 12px 14px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- ... всё, как было, но добавляем блок со статусом Discord ... -->
+    <div class="video-background">
+        <video autoplay muted loop playsinline>
+            <source src="https://www.image2url.com/r2/default/videos/1786313358394-421c86f5-2310-4697-8dfb-eeae79a5bbf2.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <div class="overlay"></div>
+    <div class="bottom-shadow"></div>
+    <canvas id="stars-canvas"></canvas>
 
     <div class="card">
-        <!-- ... аватар, имя, описание, разделитель ... -->
+
+        <div class="avatar">
+            <video autoplay muted loop playsinline>
+                <source src="https://lfdrive.ru/f/SSf9fkyM" type="video/mp4">
+                Твой браузер не поддерживает видео.
+            </video>
+        </div>
+
+        <div class="name">angelov</div>
+
+        <div class="badge">
+            <span>mid supp player</span> / love puck
+        </div>
+
+        <div class="divider"></div>
 
         <div class="links">
             <a href="https://steamcommunity.com/profiles/76561199858781159/" target="_blank" rel="noopener noreferrer" class="link-item">
@@ -74,132 +487,381 @@
             </a>
         </div>
 
-        <!-- ===== БЛОК СТАТУСА DISCORD ===== -->
-        <div class="discord-status" id="discordStatus">
-            <span class="online-dot" id="statusDot"></span>
-            <span class="status-text" id="statusText">Загрузка...</span>
-            <span class="activity-text" id="activityText"></span>
+        <div class="audio-player">
+            <div class="track-info">♫ Red Weather — Onda Andar</div>
+            <div class="controls">
+                <button id="playBtn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <polygon points="5,3 19,12 5,21" id="playIcon"/>
+                        <rect x="6" y="4" width="4" height="16" id="pauseIcon" style="display:none;"/>
+                        <rect x="14" y="4" width="4" height="16" id="pauseIcon2" style="display:none;"/>
+                    </svg>
+                </button>
+                <div class="slider-container">
+                    <input type="range" id="timeSlider" value="0" step="0.1">
+                    <div style="display:flex; justify-content:space-between; padding:0 2px;">
+                        <span class="time-display" id="currentTime">0:00</span>
+                        <span class="time-display" id="durationTime">0:00</span>
+                    </div>
+                </div>
+            </div>
+            <div class="volume-row">
+                <span class="vol-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 9v6h4l5 5V4L7 9H3z"></path>
+                        <path d="M16 8a5 5 0 0 1 0 8"></path>
+                        <path d="M19 5a9 9 0 0 1 0 14"></path>
+                    </svg>
+                </span>
+                <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.5">
+                <span class="volume-value" id="volumeValue">50%</span>
+            </div>
         </div>
 
-        <!-- ... аудиоплеер, футер ... -->
+        <!-- КОММЕНТАРИИ -->
+        <div class="comments-section" id="commentsSection">
+            <div class="comments-title">💬 комментарии</div>
+            <div class="comments-container" id="commentsContainer"></div>
+            <div class="comment-form">
+                <input type="text" id="commentAuthor" placeholder="имя" maxlength="20">
+                <input type="text" id="commentText" placeholder="сообщение..." maxlength="100">
+                <button id="commentSubmit">➤</button>
+            </div>
+        </div>
+
+        <div class="footer">
+            <span>made with stason</span>
+        </div>
+
     </div>
+
+    <audio id="bgAudio" loop preload="auto">
+        <source src="https://lfdrive.ru/f/E6C4lZ47" type="audio/mpeg">
+        Твой браузер не поддерживает аудио.
+    </audio>
 
     <script>
         // ============================================================
-        // 1. СТАТУС DISCORD (через Lanyard)
+        // 1. ПЕРЕЛИВАЮЩЕЕСЯ НАЗВАНИЕ ВКЛАДКИ
         // ============================================================
         (function() {
-            const userId = '1191918956865388684'; // твой Discord ID
-            const ws = new WebSocket('wss://api.lanyard.rest/socket');
+            const originalTitle = 'ANGELOV';
+            const chars = originalTitle.split('');
+            let index = 0;
 
-            let heartbeatInterval;
-
-            ws.onopen = function() {
-                console.log('Подключение к Lanyard установлено');
-                // Отправляем идентификацию
-                ws.send(JSON.stringify({
-                    op: 2,
-                    d: {
-                        subscribe_to_id: userId
+            function updateTitle() {
+                const newChars = chars.map((char, i) => {
+                    if (i === index) {
+                        return ' ';
                     }
-                }));
-            };
+                    return char;
+                });
+                document.title = newChars.join('');
+                index = (index + 1) % chars.length;
+            }
 
-            ws.onmessage = function(event) {
-                const data = JSON.parse(event.data);
+            setInterval(updateTitle, 200);
+            setTimeout(() => document.title = originalTitle, 100);
+        })();
 
-                if (data.op === 1) {
-                    // Heartbeat — отвечаем
-                    ws.send(JSON.stringify({ op: 1 }));
-                    return;
+        // ============================================================
+        // 2. АУДИОПЛЕЕР
+        // ============================================================
+        (function() {
+            const audio = document.getElementById('bgAudio');
+            const playBtn = document.getElementById('playBtn');
+            const playIcon = document.getElementById('playIcon');
+            const pauseIcon1 = document.getElementById('pauseIcon');
+            const pauseIcon2 = document.getElementById('pauseIcon2');
+            const timeSlider = document.getElementById('timeSlider');
+            const volumeSlider = document.getElementById('volumeSlider');
+            const volumeValueDisplay = document.getElementById('volumeValue');
+            const currentTimeDisplay = document.getElementById('currentTime');
+            const durationDisplay = document.getElementById('durationTime');
+
+            let autoPlayAttempted = false;
+
+            function formatTime(sec) {
+                if (isNaN(sec)) return '0:00';
+                const m = Math.floor(sec / 60);
+                const s = Math.floor(sec % 60);
+                return m + ':' + (s < 10 ? '0' : '') + s;
+            }
+
+            function updateTime() {
+                if (audio.duration) {
+                    const percent = (audio.currentTime / audio.duration) * 100;
+                    timeSlider.value = percent;
+                    currentTimeDisplay.textContent = formatTime(audio.currentTime);
+                    durationDisplay.textContent = formatTime(audio.duration);
                 }
+            }
 
-                if (data.t === 'INIT_STATE' || data.t === 'PRESENCE_UPDATE') {
-                    const presence = data.d;
-                    updateDiscordStatus(presence);
-                }
-            };
-
-            ws.onerror = function(err) {
-                console.warn('Ошибка Lanyard, пробуем запасной вариант:', err);
-                // Если WebSocket не работает — пробуем REST API
-                fetch(`https://api.lanyard.rest/v1/users/${userId}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.success) {
-                            updateDiscordStatus(data.data);
-                        } else {
-                            setOfflineStatus();
-                        }
-                    })
-                    .catch(() => setOfflineStatus());
-            };
-
-            function updateDiscordStatus(presence) {
-                const dot = document.getElementById('statusDot');
-                const statusText = document.getElementById('statusText');
-                const activityText = document.getElementById('activityText');
-
-                // Определяем статус
-                let status = presence.discord_status || 'offline';
-                let statusLabel = {
-                    online: 'В сети',
-                    idle: 'Отошёл',
-                    dnd: 'Не беспокоить',
-                    offline: 'Оффлайн'
-                }[status] || 'Оффлайн';
-
-                // Цвет точки
-                dot.className = 'online-dot';
-                if (status === 'idle') {
-                    dot.style.background = '#faa81a';
-                    dot.style.boxShadow = '0 0 8px rgba(250, 168, 26, 0.4)';
-                } else if (status === 'dnd') {
-                    dot.style.background = '#ed4245';
-                    dot.style.boxShadow = '0 0 8px rgba(237, 66, 69, 0.4)';
-                } else if (status === 'online') {
-                    dot.style.background = '#23a55a';
-                    dot.style.boxShadow = '0 0 8px rgba(35, 165, 90, 0.4)';
+            function setPlayState(playing) {
+                if (playing) {
+                    playIcon.style.display = 'none';
+                    pauseIcon1.style.display = 'block';
+                    pauseIcon2.style.display = 'block';
                 } else {
-                    dot.className = 'online-dot offline-dot';
-                    dot.style.boxShadow = 'none';
+                    playIcon.style.display = 'block';
+                    pauseIcon1.style.display = 'none';
+                    pauseIcon2.style.display = 'none';
                 }
-
-                statusText.textContent = statusLabel;
-
-                // Активность (игра)
-                if (presence.activities && presence.activities.length > 0) {
-                    const game = presence.activities.find(a => a.type === 0);
-                    if (game) {
-                        activityText.textContent = `🎮 ${game.name}`;
-                        return;
-                    }
-                }
-                activityText.textContent = '';
             }
 
-            function setOfflineStatus() {
-                const dot = document.getElementById('statusDot');
-                const statusText = document.getElementById('statusText');
-                const activityText = document.getElementById('activityText');
-                dot.className = 'online-dot offline-dot';
-                dot.style.boxShadow = 'none';
-                statusText.textContent = 'Не в сети';
-                activityText.textContent = '';
+            audio.addEventListener('loadedmetadata', function() {
+                durationDisplay.textContent = formatTime(audio.duration);
+                timeSlider.max = 100;
+            });
+
+            audio.addEventListener('timeupdate', updateTime);
+
+            audio.addEventListener('ended', function() {
+                if (!audio.loop) {
+                    audio.currentTime = 0;
+                    setPlayState(false);
+                    timeSlider.value = 0;
+                    currentTimeDisplay.textContent = '0:00';
+                }
+            });
+
+            function tryAutoPlay() {
+                if (!autoPlayAttempted && audio.paused && audio.src && audio.src !== '') {
+                    autoPlayAttempted = true;
+                    audio.play()
+                        .then(() => {
+                            setPlayState(true);
+                        })
+                        .catch(() => {
+                            setPlayState(false);
+                        });
+                }
             }
 
-            // Очистка при закрытии
-            window.addEventListener('beforeunload', function() {
-                if (ws.readyState === WebSocket.OPEN) {
-                    ws.close();
+            document.addEventListener('DOMContentLoaded', tryAutoPlay);
+            setTimeout(tryAutoPlay, 1000);
+
+            document.addEventListener('click', function() {
+                if (audio.paused && audio.src && audio.src !== '') {
+                    tryAutoPlay();
                 }
+            }, { once: false });
+
+            playBtn.addEventListener('click', function() {
+                if (audio.paused) {
+                    audio.play()
+                        .then(() => setPlayState(true))
+                        .catch(() => {
+                            alert('Не удалось воспроизвести трек. Проверь ссылку на файл.');
+                        });
+                } else {
+                    audio.pause();
+                    setPlayState(false);
+                }
+            });
+
+            timeSlider.addEventListener('input', function() {
+                if (audio.duration) {
+                    const newTime = (this.value / 100) * audio.duration;
+                    audio.currentTime = newTime;
+                    currentTimeDisplay.textContent = formatTime(newTime);
+                }
+            });
+
+            function updateVolumeDisplay() {
+                const val = parseFloat(volumeSlider.value);
+                audio.volume = val;
+                volumeValueDisplay.textContent = Math.round(val * 100) + '%';
+            }
+
+            volumeSlider.addEventListener('input', updateVolumeDisplay);
+            audio.volume = parseFloat(volumeSlider.value);
+            volumeValueDisplay.textContent = Math.round(parseFloat(volumeSlider.value) * 100) + '%';
+        })();
+
+        // ============================================================
+        // 3. КАСТОМНЫЙ ЗВУК ПРИ КЛИКЕ
+        // ============================================================
+        (function() {
+            const clickSound = new Audio('https://www.soundjay.com/misc/sounds/button-click-01.mp3');
+            clickSound.volume = 0.15;
+
+            document.querySelectorAll('.link-item').forEach(link => {
+                link.addEventListener('click', function() {
+                    clickSound.play().catch(() => {});
+                });
             });
         })();
 
         // ============================================================
-        // 2. ОСТАЛЬНЫЕ СКРИПТЫ (аудио, звёзды) — без изменений
+        // 4. КОММЕНТАРИИ (LOCALSTORAGE)
         // ============================================================
-        // ... твой код для аудио и звёзд ...
+        (function() {
+            const container = document.getElementById('commentsContainer');
+            const authorInput = document.getElementById('commentAuthor');
+            const textInput = document.getElementById('commentText');
+            const submitBtn = document.getElementById('commentSubmit');
+
+            const STORAGE_KEY = 'stason812_comments';
+
+            function loadComments() {
+                try {
+                    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+                } catch {
+                    return [];
+                }
+            }
+
+            function saveComments(comments) {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(comments));
+            }
+
+            function escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            function renderComments() {
+                const comments = loadComments();
+                container.innerHTML = '';
+                if (comments.length === 0) {
+                    container.innerHTML = '<div style="text-align:center;color:rgba(255,255,255,0.15);font-size:0.6rem;padding:8px 0;">пока тихо...</div>';
+                    return;
+                }
+                const reversed = comments.slice(-10).reverse();
+                reversed.forEach(c => {
+                    const div = document.createElement('div');
+                    div.className = 'comment-item';
+                    const time = new Date(c.timestamp).toLocaleString('ru', { hour: '2-digit', minute: '2-digit' });
+                    div.innerHTML = `
+                        <span class="comment-author">${escapeHtml(c.author)}</span>
+                        ${escapeHtml(c.text)}
+                        <span class="comment-time">${time}</span>
+                    `;
+                    container.appendChild(div);
+                });
+            }
+
+            function addComment() {
+                const author = authorInput.value.trim() || 'anon';
+                const text = textInput.value.trim();
+                if (!text) return;
+
+                const comments = loadComments();
+                comments.push({ author, text, timestamp: Date.now() });
+                saveComments(comments);
+                authorInput.value = '';
+                textInput.value = '';
+                renderComments();
+            }
+
+            submitBtn.addEventListener('click', addComment);
+            textInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') addComment();
+            });
+
+            renderComments();
+        })();
+
+        // ============================================================
+        // 5. ЗВЁЗДЫ (ИНТЕРАКТИВНЫЙ ФОН — СЛЕД МЫШИ)
+        // ============================================================
+        (function() {
+            const canvas = document.getElementById('stars-canvas');
+            const ctx = canvas.getContext('2d');
+            let width, height;
+            let stars = [];
+            let mouseX = -1000, mouseY = -1000;
+
+            function resize() {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            // Отслеживаем движение мыши
+            document.addEventListener('mousemove', function(e) {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+
+            const STAR_COUNT = 90;
+            const MAX_SPEED = 1.5;
+            const MIN_SIZE = 1.5;
+            const MAX_SIZE = 3.0;
+
+            for (let i = 0; i < STAR_COUNT; i++) {
+                stars.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    size: Math.random() * (MAX_SIZE - MIN_SIZE) + MIN_SIZE,
+                    speedX: (Math.random() - 0.5) * MAX_SPEED * 0.7,
+                    speedY: (Math.random() - 0.5) * MAX_SPEED * 0.7,
+                    baseSpeedX: 0,
+                    baseSpeedY: 0,
+                    opacity: Math.random() * 0.7 + 0.3,
+                    flicker: Math.random() * 0.02
+                });
+            }
+
+            function drawStars() {
+                ctx.clearRect(0, 0, width, height);
+
+                for (let s of stars) {
+                    // Эффект "отталкивания" от мыши
+                    const dx = s.x - mouseX;
+                    const dy = s.y - mouseY;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    const maxDist = 150;
+
+                    if (dist < maxDist && dist > 0) {
+                        const force = (1 - dist / maxDist) * 0.8;
+                        s.speedX += (dx / dist) * force * 0.2;
+                        s.speedY += (dy / dist) * force * 0.2;
+                    }
+
+                    // Торможение
+                    s.speedX *= 0.99;
+                    s.speedY *= 0.99;
+
+                    // Движение
+                    s.x += s.speedX;
+                    s.y += s.speedY;
+
+                    // Мерцание
+                    s.opacity += s.flicker * (Math.random() - 0.5);
+                    s.opacity = Math.min(1, Math.max(0.1, s.opacity));
+
+                    // Возврат в поле
+                    if (s.x < -50) s.x = width + 50;
+                    if (s.x > width + 50) s.x = -50;
+                    if (s.y < -50) s.y = height + 50;
+                    if (s.y > height + 50) s.y = -50;
+
+                    // Рисуем звезду
+                    const gradient = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.size * 3);
+                    gradient.addColorStop(0, `rgba(255, 255, 255, ${s.opacity})`);
+                    gradient.addColorStop(0.4, `rgba(255, 255, 200, ${s.opacity * 0.4})`);
+                    gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+
+                    ctx.beginPath();
+                    ctx.arc(s.x, s.y, s.size * 3, 0, Math.PI * 2);
+                    ctx.fillStyle = gradient;
+                    ctx.fill();
+
+                    ctx.beginPath();
+                    ctx.arc(s.x, s.y, s.size * 0.6, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255, 255, 255, ${s.opacity * 0.9})`;
+                    ctx.fill();
+                }
+
+                requestAnimationFrame(drawStars);
+            }
+            drawStars();
+        })();
     </script>
+
 </body>
 </html>
