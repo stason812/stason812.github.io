@@ -123,25 +123,27 @@
         .views-counter .eye { font-size: 1.1rem; line-height: 1; }
         .views-counter .count { font-weight: 700; min-width: 20px; text-align: center; }
 
+        /* ===== ВИДЕО-АВАТАРКА ===== */
         .avatar {
             width: 180px;
             height: 180px;
             border-radius: 6px;
             margin: 0 auto 18px;
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(0, 0, 0, 0.3);
             border: 2px solid rgba(255, 255, 255, 0.2);
             box-shadow: 0 0 40px rgba(0, 0, 0, 0.3);
             overflow: hidden;
             transition: border 0.3s;
         }
-        .avatar img {
+        .avatar video {
             width: 100%;
             height: 100%;
             object-fit: cover;
             display: block;
-            filter: grayscale(100%) contrast(1.2);
         }
-        .avatar:hover { border-color: rgba(255, 255, 255, 0.5); }
+        .avatar:hover {
+            border-color: rgba(255, 255, 255, 0.5);
+        }
 
         .name {
             font-family: 'Anime Ace v3', 'Arial Black', 'Impact', sans-serif;
@@ -335,8 +337,12 @@
             <span class="count" id="viewCount">0</span>
         </div>
 
+        <!-- ===== ВИДЕО-АВАТАРКА ===== -->
         <div class="avatar">
-            <img src="https://i.pinimg.com/1200x/00/35/7b/00357ba44ff37d63015e55780acdb4cf.jpg" alt="avatar angelov" loading="lazy">
+            <video autoplay muted loop playsinline>
+                <source src="https://lfdrive.ru/f/SSf9fkyM" type="video/mp4">
+                Твой браузер не поддерживает видео.
+            </video>
         </div>
 
         <div class="name">angelov</div>
@@ -431,7 +437,7 @@
         })();
 
         // ============================================================
-        // 3. АУДИОПЛЕЕР (АВТОЗАПУСК ПОСЛЕ ПЕРВОГО КЛИКА)
+        // 3. АУДИОПЛЕЕР (АВТОЗАПУСК)
         // ============================================================
         (function() {
             const audio = document.getElementById('bgAudio');
@@ -441,7 +447,6 @@
             const currentTimeDisplay = document.getElementById('currentTime');
             const durationDisplay = document.getElementById('durationTime');
 
-            // Флаг, чтобы автозапуск сработал только один раз
             let autoPlayAttempted = false;
 
             function formatTime(sec) {
@@ -476,7 +481,6 @@
                 }
             });
 
-            // Функция для запуска аудио
             function tryAutoPlay() {
                 if (!autoPlayAttempted && audio.paused && audio.src && audio.src !== '') {
                     autoPlayAttempted = true;
@@ -487,26 +491,20 @@
                         })
                         .catch(err => {
                             console.warn('Автовоспроизведение заблокировано браузером:', err);
-                            // Показываем кнопку play активной
                             playBtn.textContent = '▶';
                         });
                 }
             }
 
-            // Попытка автозапуска при любой загрузке страницы
             document.addEventListener('DOMContentLoaded', tryAutoPlay);
-
-            // Дублируем попытку через 1 секунду (на случай, если аудио ещё не загрузилось)
             setTimeout(tryAutoPlay, 1000);
 
-            // Автозапуск при первом клике мыши по странице (если не сработало выше)
             document.addEventListener('click', function() {
                 if (audio.paused && audio.src && audio.src !== '') {
                     tryAutoPlay();
                 }
             }, { once: false });
 
-            // Кнопка Play/Pause (ручное управление)
             playBtn.addEventListener('click', function() {
                 if (audio.paused) {
                     audio.play()
