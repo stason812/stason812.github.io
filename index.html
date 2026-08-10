@@ -35,8 +35,9 @@
             font-family: 'Anime Ace v3', 'Arial Black', 'Impact', sans-serif;
             padding: 20px;
             position: relative;
-            overflow: hidden;
-            cursor: default;
+            overflow-x: hidden;
+            gap: 30px;
+            flex-wrap: wrap;
         }
 
         .video-background {
@@ -87,8 +88,8 @@
         .card {
             position: relative;
             z-index: 10;
-            max-width: 480px;
-            width: 100%;
+            max-width: 580px;
+            width: 90%;
             background: rgba(255, 255, 255, 0.12);
             backdrop-filter: blur(20px) saturate(180%);
             -webkit-backdrop-filter: blur(20px) saturate(180%);
@@ -98,12 +99,112 @@
             box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
             transition: transform 0.25s ease;
             text-align: center;
+            flex-shrink: 0;
         }
         .card:hover {
             transform: scale(1.005);
         }
 
-        /* ===== АНИМИРОВАННОЕ ПОЯВЛЕНИЕ ===== */
+        .comments-sidebar {
+            position: relative;
+            z-index: 10;
+            max-width: 320px;
+            width: 90%;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 32px;
+            padding: 24px 20px 28px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+        .comments-sidebar .sidebar-title {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: rgba(255, 255, 255, 0.2);
+            margin-bottom: 14px;
+            font-family: 'Anime Ace v3', 'Arial Black', 'Impact', sans-serif;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .comments-sidebar .comments-container {
+            flex: 1;
+            overflow-y: auto;
+            max-height: 320px;
+            margin-bottom: 12px;
+            padding-right: 4px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.05) transparent;
+        }
+        .comments-sidebar .comments-container::-webkit-scrollbar {
+            width: 3px;
+        }
+        .comments-sidebar .comments-container::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        .comment-item {
+            text-align: left;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        .comment-item .comment-author {
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.8);
+            margin-right: 6px;
+        }
+        .comment-item .comment-time {
+            font-size: 0.5rem;
+            color: rgba(255, 255, 255, 0.2);
+            float: right;
+        }
+        .comment-form {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-top: 4px;
+        }
+        .comment-form input {
+            flex: 1;
+            min-width: 60px;
+            padding: 6px 12px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(0, 0, 0, 0.2);
+            color: #fff;
+            font-size: 0.7rem;
+            font-family: 'Anime Ace v3', 'Arial Black', 'Impact', sans-serif;
+            outline: none;
+            transition: border 0.2s;
+        }
+        .comment-form input:focus {
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        .comment-form button {
+            padding: 6px 16px;
+            border-radius: 30px;
+            border: none;
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            font-size: 0.7rem;
+            cursor: pointer;
+            font-family: 'Anime Ace v3', 'Arial Black', 'Impact', sans-serif;
+            transition: background 0.2s;
+        }
+        .comment-form button:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
         .card > * {
             opacity: 0;
             transform: translateY(20px);
@@ -116,13 +217,21 @@
         .card .links { animation-delay: 0.4s; }
         .card .audio-player { animation-delay: 0.5s; }
         .card .footer { animation-delay: 0.6s; }
-        .card .comments-section { animation-delay: 0.7s; }
+
+        .comments-sidebar > * {
+            opacity: 0;
+            transform: translateX(20px);
+            animation: slideInRight 0.5s ease forwards;
+        }
+        .comments-sidebar .sidebar-title { animation-delay: 0.1s; }
+        .comments-sidebar .comments-container { animation-delay: 0.2s; }
+        .comments-sidebar .comment-form { animation-delay: 0.3s; }
 
         @keyframes fadeUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideInRight {
+            to { opacity: 1; transform: translateX(0); }
         }
 
         .avatar {
@@ -352,97 +461,10 @@
             padding-top: 14px;
         }
 
-        /* ===== КОММЕНТАРИИ ===== */
-        .comments-section {
-            margin-top: 22px;
-            padding: 16px 12px 12px;
-            background: rgba(0, 0, 0, 0.15);
-            backdrop-filter: blur(8px);
-            border-radius: 28px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        .comments-section .comments-title {
-            font-size: 0.6rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: rgba(255, 255, 255, 0.2);
-            margin-bottom: 10px;
-            font-family: 'Anime Ace v3', 'Arial Black', 'Impact', sans-serif;
-        }
-        .comment-item {
-            text-align: left;
-            padding: 6px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-            font-size: 0.7rem;
-            color: rgba(255, 255, 255, 0.6);
-        }
-        .comment-item .comment-author {
-            font-weight: 700;
-            color: rgba(255, 255, 255, 0.8);
-            margin-right: 6px;
-        }
-        .comment-item .comment-time {
-            font-size: 0.5rem;
-            color: rgba(255, 255, 255, 0.2);
-            float: right;
-        }
-        .comment-form {
-            display: flex;
-            gap: 8px;
-            margin-top: 10px;
-            flex-wrap: wrap;
-        }
-        .comment-form input {
-            flex: 1;
-            min-width: 80px;
-            padding: 6px 12px;
-            border-radius: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            background: rgba(0, 0, 0, 0.2);
-            color: #fff;
-            font-size: 0.7rem;
-            font-family: 'Anime Ace v3', 'Arial Black', 'Impact', sans-serif;
-            outline: none;
-            transition: border 0.2s;
-        }
-        .comment-form input:focus {
-            border-color: rgba(255, 255, 255, 0.2);
-        }
-        .comment-form button {
-            padding: 6px 16px;
-            border-radius: 30px;
-            border: none;
-            background: rgba(255, 255, 255, 0.08);
-            color: #fff;
-            font-size: 0.7rem;
-            cursor: pointer;
-            font-family: 'Anime Ace v3', 'Arial Black', 'Impact', sans-serif;
-            transition: background 0.2s;
-        }
-        .comment-form button:hover {
-            background: rgba(255, 255, 255, 0.15);
-        }
-        .comments-container {
-            max-height: 140px;
-            overflow-y: auto;
-            scrollbar-width: thin;
-            scrollbar-color: rgba(255, 255, 255, 0.05) transparent;
-        }
-        .comments-container::-webkit-scrollbar {
-            width: 3px;
-        }
-        .comments-container::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-        }
-
-        @media (max-width: 480px) {
-            .card { padding: 24px 18px 32px; border-radius: 32px; }
-            .name { font-size: 2.0rem; }
-            .avatar { width: 140px; height: 140px; border-radius: 4px; }
-            .link-item { padding: 12px 16px; font-size: 0.9rem; }
-            .badge { font-size: 0.75rem; }
-            .audio-player { padding: 10px 12px 14px; }
+        @media (max-width: 900px) {
+            body { flex-direction: column; gap: 20px; }
+            .card { max-width: 100%; width: 100%; }
+            .comments-sidebar { max-width: 100%; width: 100%; max-height: 300px; }
         }
     </style>
 </head>
@@ -518,21 +540,29 @@
             </div>
         </div>
 
-        <!-- КОММЕНТАРИИ -->
-        <div class="comments-section" id="commentsSection">
-            <div class="comments-title">💬 комментарии</div>
-            <div class="comments-container" id="commentsContainer"></div>
-            <div class="comment-form">
-                <input type="text" id="commentAuthor" placeholder="имя" maxlength="20">
-                <input type="text" id="commentText" placeholder="сообщение..." maxlength="100">
-                <button id="commentSubmit">➤</button>
-            </div>
-        </div>
-
         <div class="footer">
             <span>made with stason</span>
         </div>
 
+    </div>
+
+    <!-- ===== КОММЕНТАРИИ С МИНИМАЛИСТИЧНОЙ ИКОНКОЙ ===== -->
+    <div class="comments-sidebar" id="commentsSidebar">
+        <div class="sidebar-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                <circle cx="12" cy="11" r="1" fill="white" stroke="none"/>
+                <circle cx="16" cy="11" r="1" fill="white" stroke="none"/>
+                <circle cx="8" cy="11" r="1" fill="white" stroke="none"/>
+            </svg>
+            комментарии
+        </div>
+        <div class="comments-container" id="commentsContainer"></div>
+        <div class="comment-form">
+            <input type="text" id="commentAuthor" placeholder="имя" maxlength="20">
+            <input type="text" id="commentText" placeholder="сообщение..." maxlength="100">
+            <button id="commentSubmit">➤</button>
+        </div>
     </div>
 
     <audio id="bgAudio" loop preload="auto">
@@ -629,12 +659,8 @@
                 if (!autoPlayAttempted && audio.paused && audio.src && audio.src !== '') {
                     autoPlayAttempted = true;
                     audio.play()
-                        .then(() => {
-                            setPlayState(true);
-                        })
-                        .catch(() => {
-                            setPlayState(false);
-                        });
+                        .then(() => setPlayState(true))
+                        .catch(() => setPlayState(false));
                 }
             }
 
@@ -651,9 +677,7 @@
                 if (audio.paused) {
                     audio.play()
                         .then(() => setPlayState(true))
-                        .catch(() => {
-                            alert('Не удалось воспроизвести трек. Проверь ссылку на файл.');
-                        });
+                        .catch(() => alert('Не удалось воспроизвести трек. Проверь ссылку на файл.'));
                 } else {
                     audio.pause();
                     setPlayState(false);
@@ -694,7 +718,7 @@
         })();
 
         // ============================================================
-        // 4. КОММЕНТАРИИ (LOCALSTORAGE)
+        // 4. КОММЕНТАРИИ
         // ============================================================
         (function() {
             const container = document.getElementById('commentsContainer');
@@ -765,7 +789,7 @@
         })();
 
         // ============================================================
-        // 5. ЗВЁЗДЫ (ИНТЕРАКТИВНЫЙ ФОН — СЛЕД МЫШИ)
+        // 5. ЗВЁЗДЫ (150 ШТУК)
         // ============================================================
         (function() {
             const canvas = document.getElementById('stars-canvas');
@@ -781,16 +805,15 @@
             window.addEventListener('resize', resize);
             resize();
 
-            // Отслеживаем движение мыши
             document.addEventListener('mousemove', function(e) {
                 mouseX = e.clientX;
                 mouseY = e.clientY;
             });
 
-            const STAR_COUNT = 90;
-            const MAX_SPEED = 1.5;
+            const STAR_COUNT = 150;
+            const MAX_SPEED = 1.8;
             const MIN_SIZE = 1.5;
-            const MAX_SIZE = 3.0;
+            const MAX_SIZE = 3.2;
 
             for (let i = 0; i < STAR_COUNT; i++) {
                 stars.push({
@@ -799,8 +822,6 @@
                     size: Math.random() * (MAX_SIZE - MIN_SIZE) + MIN_SIZE,
                     speedX: (Math.random() - 0.5) * MAX_SPEED * 0.7,
                     speedY: (Math.random() - 0.5) * MAX_SPEED * 0.7,
-                    baseSpeedX: 0,
-                    baseSpeedY: 0,
                     opacity: Math.random() * 0.7 + 0.3,
                     flicker: Math.random() * 0.02
                 });
@@ -810,7 +831,6 @@
                 ctx.clearRect(0, 0, width, height);
 
                 for (let s of stars) {
-                    // Эффект "отталкивания" от мыши
                     const dx = s.x - mouseX;
                     const dy = s.y - mouseY;
                     const dist = Math.sqrt(dx * dx + dy * dy);
@@ -822,46 +842,11 @@
                         s.speedY += (dy / dist) * force * 0.2;
                     }
 
-                    // Торможение
                     s.speedX *= 0.99;
                     s.speedY *= 0.99;
 
-                    // Движение
                     s.x += s.speedX;
                     s.y += s.speedY;
 
-                    // Мерцание
                     s.opacity += s.flicker * (Math.random() - 0.5);
                     s.opacity = Math.min(1, Math.max(0.1, s.opacity));
-
-                    // Возврат в поле
-                    if (s.x < -50) s.x = width + 50;
-                    if (s.x > width + 50) s.x = -50;
-                    if (s.y < -50) s.y = height + 50;
-                    if (s.y > height + 50) s.y = -50;
-
-                    // Рисуем звезду
-                    const gradient = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.size * 3);
-                    gradient.addColorStop(0, `rgba(255, 255, 255, ${s.opacity})`);
-                    gradient.addColorStop(0.4, `rgba(255, 255, 200, ${s.opacity * 0.4})`);
-                    gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
-
-                    ctx.beginPath();
-                    ctx.arc(s.x, s.y, s.size * 3, 0, Math.PI * 2);
-                    ctx.fillStyle = gradient;
-                    ctx.fill();
-
-                    ctx.beginPath();
-                    ctx.arc(s.x, s.y, s.size * 0.6, 0, Math.PI * 2);
-                    ctx.fillStyle = `rgba(255, 255, 255, ${s.opacity * 0.9})`;
-                    ctx.fill();
-                }
-
-                requestAnimationFrame(drawStars);
-            }
-            drawStars();
-        })();
-    </script>
-
-</body>
-</html>
