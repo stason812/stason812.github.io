@@ -721,104 +721,116 @@
             });
         })();
 
-        // ============================================================
-        // 4. КОММЕНТАРИИ (JSONBin — общие для всех)
-        // ============================================================
-        (function() {
-            const container = document.getElementById('commentsContainer');
-            const authorInput = document.getElementById('commentAuthor');
-            const textInput = document.getElementById('commentText');
-            const submitBtn = document.getElementById('commentSubmit');
+// ============================================================
+// 4. КОММЕНТАРИИ (JSONBin + локальный fallback)
+// ============================================================
+(function() {
+    const container = document.getElementById('commentsContainer');
+    const authorInput = document.getElementById('commentAuthor');
+    const textInput = document.getElementById('commentText');
+    const submitBtn = document.getElementById('commentSubmit');
 
-            // ТВОИ ДАННЫЕ JSONBIN
-            const BIN_ID = '6a79d9edda38895dfed11dc3';
-            const MASTER_KEY = '$2a$10$8nJXWYuV9mZ8m2y1cmRoF09fp8vR05wXz4jJhzFLO6rmuAIgobES';
+    const BIN_ID = '6a79d9edda38895dfed11dc3';
+    const MASTER_KEY = '$2a$10$8nJXWYuV9mZ8m2y1cmRoF09fp8vR05wXz4jJhzFLO6rmuAIgobES';
+    const LOCAL_KEY = 'stason812_comments_fallback';
 
-            // Функция загрузки комментариев
-            async function loadComments() {
-                try {
-                    const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
-                        headers: { 'X-Master-Key': MASTER_KEY }
-                    });
-                    if (!response.ok) throw new Error('Ошибка загрузки');
-                    const data = await response.json();
-                    return data.record || [];
-                } catch (e) {
-                    console.warn('Ошибка загрузки комментариев:', e);
-                    return [];
-                }
-            }
-
-            // Функция сохранения комментариев
-            async function saveComments(comments) {
-                try {
-                    await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-Master-Key': MASTER_KEY
-                        },
-                        body: JSON.stringify(comments)
-                    });
-                } catch (e) {
-                    console.warn('Ошибка сохранения:', e);
-                }
-            }
-
-            function escapeHtml(text) {
-                const div = document.createElement('div');
-                div.textContent = text;
-                return div.innerHTML;
-            }
-
-            function renderComments(comments) {
-                container.innerHTML = '';
-                if (!comments || comments.length === 0) {
-                    container.innerHTML = '<div style="text-align:center;color:rgba(255,255,255,0.12);font-size:0.6rem;padding:16px 0;">пока тихо...</div>';
-                    return;
-                }
-                const reversed = comments.slice(-12).reverse();
-                reversed.forEach(c => {
-                    const div = document.createElement('div');
-                    div.className = 'comment-item';
-                    const time = new Date(c.timestamp).toLocaleString('ru', { hour: '2-digit', minute: '2-digit' });
-                    div.innerHTML = `
-                        <span class="comment-author">${escapeHtml(c.author)}</span>
-                        <span class="comment-text">${escapeHtml(c.text)}</span>
-                        <span class="comment-time">${time}</span>
-                    `;
-                    container.appendChild(div);
-                });
-                container.scrollTop = container.scrollHeight;
-            }
-
-            async function addComment() {
-                const author = authorInput.value.trim() || 'anon';
-                const text = textInput.value.trim();
-                if (!text) return;
-
-                const currentComments = await loadComments();
-                const newComment = { author, text, timestamp: Date.now() };
-                currentComments.push(newComment);
-                await saveComments(currentComments);
-                renderComments(currentComments);
-                authorInput.value = '';
-                textInput.value = '';
-            }
-
-            async function init() {
-                const comments = await loadComments();
-                renderComments(comments);
-            }
-
-            submitBtn.addEventListener('click', addComment);
-            textInput.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') addComment();
+    // Загрузка из JSONBin
+    async function loadComments() {
+        try {
+            const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+                headers: { 'X-Master-Key': MASTER_KEY },
+                cache: 'no-store' // принудительно игнорируем кэш
             });
+            if (!response.ok) throw new Error('Ошибка загрузки');
+            const data = await response.json();
+            const comments = data.record || [];
+            // Сохраняем в localStorage как резервную копию
+            localStorage.setItem(LOCAL_KEY, JSON.stringify(comments));
+            return comments;
+        } catch (e) {
+            console.warn('Ошибка загрузки из JSONBin, беру из localStorage:', e);
+            try {
+                return JSON.parse(localStorage.getItem(LOCAL_KEY)) || [];
+            } catch {
+                return [];
+            }
+        }
+    }
 
-            init();
-        })();
+    // Сохранение в JSONBin
+    async function saveComments(comments) {
+        try {
+            const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': MASTER_KEY
+                },
+                body: JSON.stringify(comments)
+            });
+            if (!response.ok) throw new Error('Ошибка сохранения');
+            // Обновляем резервную копию
+            localStorage.setItem(LOCAL_KEY, JSON.stringify(comments));
+        } catch (e) {
+            console.warn('Ошибка сохранения в JSONBin, сохраняю локально:', e);
+            // Сохраняем в localStorage как fallback
+            localStorage.setItem(LOCAL_KEY, JSON.stringify(comments));
+        }
+    }
 
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function renderComments(comments) {
+        container.innerHTML = '';
+        if (!comments || comments.length === 0) {
+            container.innerHTML = '<div style="text-align:center;color:rgba(255,255,255,0.12);font-size:0.6rem;padding:16px 0;">пока тихо...</div>';
+            return;
+        }
+        const reversed = comments.slice(-12).reverse();
+        reversed.forEach(c => {
+            const div = document.createElement('div');
+            div.className = 'comment-item';
+            const time = new Date(c.timestamp).toLocaleString('ru', { hour: '2-digit', minute: '2-digit' });
+            div.innerHTML = `
+                <span class="comment-author">${escapeHtml(c.author)}</span>
+                <span class="comment-text">${escapeHtml(c.text)}</span>
+                <span class="comment-time">${time}</span>
+            `;
+            container.appendChild(div);
+        });
+        container.scrollTop = container.scrollHeight;
+    }
+
+    async function addComment() {
+        const author = authorInput.value.trim() || 'anon';
+        const text = textInput.value.trim();
+        if (!text) return;
+
+        const currentComments = await loadComments();
+        const newComment = { author, text, timestamp: Date.now() };
+        currentComments.push(newComment);
+        await saveComments(currentComments);
+        renderComments(currentComments);
+        authorInput.value = '';
+        textInput.value = '';
+    }
+
+    async function init() {
+        const comments = await loadComments();
+        renderComments(comments);
+    }
+
+    submitBtn.addEventListener('click', addComment);
+    textInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') addComment();
+    });
+
+    init();
+})();
         // ============================================================
         // 5. ЗВЁЗДЫ
         // ============================================================
