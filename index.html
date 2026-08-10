@@ -722,7 +722,7 @@
         })();
 
 // ============================================================
-// 4. КОММЕНТАРИИ (JSONBin — с индикацией отправки)
+// 4. КОММЕНТАРИИ (JSONBin — новый бин и ключ)
 // ============================================================
 (function() {
     const container = document.getElementById('commentsContainer');
@@ -730,11 +730,10 @@
     const textInput = document.getElementById('commentText');
     const submitBtn = document.getElementById('commentSubmit');
 
-    const BIN_ID = '6a79d9edda38895dfed11dc3';
-    const MASTER_KEY = '$2a$10$xuRXS1IBjY9RecMVeXaWWebJhP0tvqSksCoKBtmGhbD9K8ZvMjy/W';
+    const BIN_ID = '6a79dda9da38895dfed13114';
+    const MASTER_KEY = '$2a$10$TYxjSkZxgY7nCaFvovzCzuELwbAK/FFHYoSPHEvvQqbl/qAmF8ufy';
     const LOCAL_KEY = 'stason812_comments_fallback';
 
-    // Загрузка комментариев
     async function loadComments() {
         try {
             const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
@@ -756,7 +755,6 @@
         }
     }
 
-    // Сохранение комментариев
     async function saveComments(comments) {
         try {
             const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
@@ -807,7 +805,6 @@
         container.scrollTop = container.scrollHeight;
     }
 
-    // Добавление комментария с индикацией
     async function addComment() {
         const author = authorInput.value.trim() || 'anon';
         const text = textInput.value.trim();
@@ -817,7 +814,6 @@
             return;
         }
 
-        // Блокируем кнопку и показываем "отправка..."
         submitBtn.textContent = '⏳';
         submitBtn.disabled = true;
 
